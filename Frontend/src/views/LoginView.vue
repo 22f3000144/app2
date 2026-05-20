@@ -1,7 +1,6 @@
 <template>
-  <div class="about">
-    <h1>This is an about page</h1>
-  </div>
+<h1>Login </h1>
+Login and Keep Chaking For Detaills
 </template>
 
 <style>

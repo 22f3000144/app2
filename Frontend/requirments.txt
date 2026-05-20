@@ -1,0 +1,5 @@
+vue
+vue-router
+axios
+bootstrap
+core

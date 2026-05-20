@@ -1,9 +1,12 @@
 <script setup>
-import TheWelcome from '../components/TheWelcome.vue'
+import TheWelcome from '../components/HelloWorld.vue'
 </script>
 
 <template>
   <main>
-    <TheWelcome />
+    <HelloWorld />
+    
   </main>
+      <p>Thsi Placemnet Portal Application. Here You can Find Jobs, Create Vacancy.</p>
+    <b>Resiter For Placemnts</b>
 </template>
