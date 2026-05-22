@@ -24,6 +24,24 @@ const router = createRouter({
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/CompanyRegisterView.vue'),
+    },
+        {
+      path: '/StudentRegister',
+      name: 'student-register',
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import('../views/StudentRegisterView.vue'),
+    },
+  {
+  path: '/Studentdashboard/:name',
+  name: 'dashboard',
+  component: () => import('../views/StudentDashboardView.vue'),
+  },
+          {
+      path: '/admin-dashboard',
+      name: 'admin-dashboard',
+      component: () => import('../views/admin/AdminDashboardView.vue'),
     }
   ],
 })

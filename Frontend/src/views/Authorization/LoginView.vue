@@ -1,52 +1,66 @@
-
 <template>
-  <main>
-  <HelloWorld />
-  <img alt="App logo" class="logo" src="@/assets/logo.png" width="125" height="125" />
-  </main>
-  
-  <div class="register-container">
+  <div class="login-container">
 
-    <div class="register-card">
+    <div class="login-card">
 
       <h1 class="title">
-        Company Registration
+        Placement Portal Login
       </h1>
 
       <p class="subtitle">
-        Register your company for campus placements
+        Login to continue
       </p>
 
-      <form @submit.prevent="registerCompany">
+      <form @submit.prevent="loginUser">
 
-        <!-- Company HR Name -->
+        <!-- Role Selection -->
         <div class="form-group">
-          <label>HR Name</label>
 
-          <input
-            type="text"
-            v-model="form.name"
+          <label>Login As</label>
+
+          <select
+            v-model="selectedRole"
             class="form-control"
-            placeholder="Enter HR Name"
             required
-          />
+          >
+            <option value="">
+              Select Role
+            </option>
+
+            <option value="student">
+              Student
+            </option>
+
+            <option value="company">
+              Company
+            </option>
+
+            <option value="admin">
+              Admin
+            </option>
+
+          </select>
+
         </div>
 
         <!-- Email -->
         <div class="form-group">
+
           <label>Email</label>
 
           <input
             type="email"
             v-model="form.email"
             class="form-control"
-            placeholder="Enter Company Email"
+            placeholder="Enter Email"
             required
           />
+
         </div>
 
         <!-- Password -->
         <div class="form-group">
+
           <label>Password</label>
 
           <input
@@ -56,51 +70,15 @@
             placeholder="Enter Password"
             required
           />
-        </div>
 
-        <!-- Company Name -->
-        <div class="form-group">
-          <label>Company Name</label>
-
-          <input
-            type="text"
-            v-model="form.company_name"
-            class="form-control"
-            placeholder="Enter Company Name"
-            required
-          />
-        </div>
-
-        <!-- Website -->
-        <div class="form-group">
-          <label>Website</label>
-
-          <input
-            type="text"
-            v-model="form.website"
-            class="form-control"
-            placeholder="Enter Company Website"
-          />
-        </div>
-
-        <!-- HR Contact -->
-        <div class="form-group">
-          <label>HR Contact</label>
-
-          <input
-            type="text"
-            v-model="form.hr_contact"
-            class="form-control"
-            placeholder="Enter HR Contact Number"
-          />
         </div>
 
         <!-- Submit -->
         <button
           type="submit"
-          class="register-btn"
+          class="login-btn"
         >
-          Register Company
+          Login
         </button>
 
       </form>
@@ -113,33 +91,29 @@
         {{ message }}
       </p>
 
+
     </div>
 
   </div>
 </template>
 
 <script>
-import HelloWorld from "@/components/HelloWorld.vue";
 import axios from "axios";
 
 export default {
 
-  name: "CompanyRegisterView",
+  name: "LoginView",
 
   data() {
 
     return {
 
+      selectedRole: "",
+
       form: {
 
-        name: "",
         email: "",
-        password: "",
-        role: "company",
-
-        company_name: "",
-        website: "",
-        hr_contact: ""
+        password: ""
 
       },
 
@@ -150,30 +124,62 @@ export default {
 
   methods: {
 
-    async registerCompany() {
+    async loginUser() {
 
       try {
 
         const response = await axios.post(
-          "http://127.0.0.1:5000/api/register",
+          "http://127.0.0.1:5000/api/login",
           this.form
+        );
+
+        // Backend Role
+        const backendRole = response.data.role;
+
+        // Match dropdown role
+        if (backendRole !== this.selectedRole) {
+
+          this.message = "Selected role does not match account.";
+
+          return;
+        }
+
+        // Store JWT
+        localStorage.setItem(
+          "token",
+          response.data.access_token
+        );
+
+        localStorage.setItem(
+          "role",
+          response.data.role
+        );
+
+        localStorage.setItem(
+          "name",
+          response.data.name
         );
 
         this.message = response.data.message;
 
-        // Reset form
-        this.form = {
+        // Redirect Based On Role
+        if (backendRole === "admin") {
 
-          name: "",
-          email: "",
-          password: "",
-          role: "company",
+          this.$router.push("/admin-dashboard");
 
-          company_name: "",
-          website: "",
-          hr_contact: ""
+        }
 
-        };
+        else if (backendRole === "student") {
+
+          this.$router.push("/Studentdashboard/" + response.data.name);
+
+        }
+
+        else if (backendRole === "company") {
+
+          this.$router.push("/company/dashboard");
+
+        }
 
       }
 
@@ -198,7 +204,7 @@ export default {
 
 <style scoped>
 
-.register-container {
+.login-container {
 
   min-height: 100vh;
 
@@ -213,11 +219,11 @@ export default {
   padding: 20px;
 }
 
-.register-card {
+.login-card {
 
   width: 100%;
 
-  max-width: 500px;
+  max-width: 450px;
 
   background-color: white;
 
@@ -290,7 +296,7 @@ label {
   box-shadow: 0 0 5px rgba(37, 99, 235, 0.3);
 }
 
-.register-btn {
+.login-btn {
 
   width: 100%;
 
@@ -313,7 +319,7 @@ label {
   transition: 0.3s;
 }
 
-.register-btn:hover {
+.login-btn:hover {
 
   background-color: #1d4ed8;
 }
@@ -329,9 +335,36 @@ label {
   color: green;
 }
 
+.register-links {
+
+  margin-top: 25px;
+
+  display: flex;
+
+  justify-content: space-between;
+
+  gap: 10px;
+}
+
+.register-links a {
+
+  text-decoration: none;
+
+  color: #2563eb;
+
+  font-weight: 600;
+
+  font-size: 14px;
+}
+
+.register-links a:hover {
+
+  text-decoration: underline;
+}
+
 @media (max-width: 768px) {
 
-  .register-card {
+  .login-card {
 
     padding: 25px;
   }
@@ -339,6 +372,13 @@ label {
   .title {
 
     font-size: 26px;
+  }
+
+  .register-links {
+
+    flex-direction: column;
+
+    align-items: center;
   }
 }
 

@@ -1,24 +1,46 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterLink, RouterView, useRoute } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
+
+const route = useRoute()
+
+const hideNavbar = route.path.includes('/dashboard')
 </script>
 
 <template>
-  <header>
-    <img alt="App logo" class="logo" src="@/assets/logo.png" width="125" height="125" />
+
+  <!-- Public Header -->
+  <header v-if="!hideNavbar">
+    <img
+      alt="App logo"
+      class="logo"
+      src="@/assets/logo.png"
+      width="125"
+      height="125"
+    />
 
     <div class="wrapper">
-      <HelloWorld msg="Welcome To Eduvora" />
+      <HelloWorld msg="Eduvora" />
 
       <nav>
         <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/Login">Login</RouterLink>
-        <RouterLink to="/CompanyRegister">Sign In As Company</RouterLink>
 
+        <RouterLink to="/login">
+          Login
+        </RouterLink>
+
+        <RouterLink to="/CompanyRegister">
+          Company Sign Up
+        </RouterLink>
+
+        <RouterLink to="/StudentRegister">
+          Student Sign Up
+        </RouterLink>
       </nav>
     </div>
   </header>
 
+  <!-- Page Content -->
   <RouterView />
 </template>
 
@@ -30,7 +52,7 @@ header {
 
 .logo {
   display: block;
-  margin: 3 auto 2rem;
+  margin: 0 auto 2rem;
 }
 
 nav {
@@ -50,7 +72,9 @@ nav a.router-link-exact-active:hover {
 
 nav a {
   display: inline-block;
+
   padding: 0 1rem;
+
   border-left: 1px solid var(--color-border);
 }
 
@@ -61,7 +85,9 @@ nav a:first-of-type {
 @media (min-width: 1024px) {
   header {
     display: flex;
+
     place-items: center;
+
     padding-right: calc(var(--section-gap) / 2);
   }
 
@@ -71,16 +97,21 @@ nav a:first-of-type {
 
   header .wrapper {
     display: flex;
+
     place-items: flex-start;
+
     flex-wrap: wrap;
   }
 
   nav {
     text-align: left;
+
     margin-left: -1rem;
+
     font-size: 1rem;
 
     padding: 1rem 0;
+
     margin-top: 1rem;
   }
 }

@@ -19,7 +19,7 @@ class Index(Resource):
         return {"message": "Authentication API is active"}, 200
 
 
-# ======================================
+# ===============================s=======
 # REGISTER API
 # ======================================
 
