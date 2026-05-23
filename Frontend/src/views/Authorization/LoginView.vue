@@ -1,267 +1,522 @@
 <template>
-  <div class="login-container">
+  <div class="login-page">
 
-    <div class="login-card">
+    <!-- ======================================
+    LEFT SECTION
+    ======================================= -->
 
-      <h1 class="title">
-        Placement Portal Login
-      </h1>
+    <div class="login-left">
 
-      <p class="subtitle">
-        Login to continue
-      </p>
+      <div class="overlay">
 
-      <form @submit.prevent="loginUser">
+        <div class="brand-content">
 
-        <!-- Role Selection -->
-        <div class="form-group">
+          <h1>Eduvora</h1>
 
-          <label>Login As</label>
+          <p>
+            Smart Placement Management Portal
+          </p>
 
-          <select
-            v-model="selectedRole"
-            class="form-control"
-            required
-          >
-            <option value="">
-              Select Role
-            </option>
+          <div class="features">
 
-            <option value="student">
-              Student
-            </option>
+            <div class="feature-item">
 
-            <option value="company">
-              Company
-            </option>
+              <i class="bi bi-check-circle-fill"></i>
 
-            <option value="admin">
-              Admin
-            </option>
+              Student Placement Tracking
 
-          </select>
+            </div>
 
-        </div>
+            <div class="feature-item">
 
-        <!-- Email -->
-        <div class="form-group">
+              <i class="bi bi-check-circle-fill"></i>
 
-          <label>Email</label>
+              Company Recruitment Management
 
-          <input
-            type="email"
-            v-model="form.email"
-            class="form-control"
-            placeholder="Enter Email"
-            required
-          />
+            </div>
+
+            <div class="feature-item">
+
+              <i class="bi bi-check-circle-fill"></i>
+
+              Real-time Analytics & Reports
+
+            </div>
+
+          </div>
 
         </div>
 
-        <!-- Password -->
-        <div class="form-group">
+      </div>
 
-          <label>Password</label>
+    </div>
 
-          <input
-            type="password"
-            v-model="form.password"
-            class="form-control"
-            placeholder="Enter Password"
-            required
-          />
+
+    <!-- ======================================
+    RIGHT SECTION
+    ======================================= -->
+
+    <div class="login-right">
+
+      <div class="login-card">
+
+        <!-- Header -->
+        <div class="login-header">
+
+          <h2>Welcome Back</h2>
+
+          <p>
+            Login to continue
+          </p>
 
         </div>
 
-        <!-- Submit -->
-        <button
-          type="submit"
-          class="login-btn"
+        <!-- Error Message -->
+        <div
+          v-if="message"
+          class="message-box"
         >
-          Login
-        </button>
+          {{ message }}
+        </div>
 
-      </form>
+        <!-- Login Form -->
+        <form @submit.prevent="loginUser">
 
-      <!-- Message -->
-      <p
-        v-if="message"
-        class="message"
-      >
-        {{ message }}
-      </p>
+          <!-- Role -->
+          <div class="form-group">
 
+            <label>Select Role</label>
+
+            <select v-model="selectedRole">
+
+              <option value="student">
+                Student
+              </option>
+
+              <option value="company">
+                Company
+              </option>
+
+              <option value="admin">
+                Admin
+              </option>
+
+            </select>
+
+          </div>
+
+          <!-- Email -->
+          <div class="form-group">
+
+            <label>Email Address</label>
+
+            <input
+              type="email"
+              placeholder="Enter email"
+              v-model="form.email"
+              required
+            />
+
+          </div>
+
+          <!-- Password -->
+          <div class="form-group">
+
+            <label>Password</label>
+
+            <input
+              type="password"
+              placeholder="Enter password"
+              v-model="form.password"
+              required
+            />
+
+          </div>
+
+          <!-- Login Button -->
+          <button
+            type="submit"
+            class="login-btn"
+            :disabled="loading"
+          >
+
+            <span v-if="loading">
+              Logging In...
+            </span>
+
+            <span v-else>
+              Login
+            </span>
+
+          </button>
+
+        </form>
+
+        <!-- Footer -->
+        <div class="login-footer">
+
+          <p>
+            Don't have an account?
+          </p>
+
+          <RouterLink to="/register">
+            Register Here
+          </RouterLink>
+
+        </div>
+
+      </div>
 
     </div>
 
   </div>
 </template>
 
-<script>
-import axios from "axios";
+<script setup>
 
-export default {
+import axios from 'axios'
 
-  name: "LoginView",
+import { ref } from 'vue'
 
-  data() {
+import {
+  RouterLink,
+  useRouter,
+} from 'vue-router'
 
-    return {
 
-      selectedRole: "",
+// ======================================
+// ROUTER
+// ======================================
 
-      form: {
+const router = useRouter()
 
-        email: "",
-        password: ""
 
-      },
+// ======================================
+// REACTIVE VARIABLES
+// ======================================
 
-      message: ""
+const loading = ref(false)
 
-    };
-  },
+const message = ref('')
 
-  methods: {
+const selectedRole = ref('student')
 
-    async loginUser() {
+const form = ref({
 
-      try {
+  email: '',
+  password: '',
 
-        const response = await axios.post(
-          "http://127.0.0.1:5000/api/login",
-          this.form
-        );
+})
 
-        // Backend Role
-        const backendRole = response.data.role;
 
-        // Match dropdown role
-        if (backendRole !== this.selectedRole) {
+// ======================================
+// LOGIN FUNCTION
+// ======================================
 
-          this.message = "Selected role does not match account.";
+const loginUser = async () => {
 
-          return;
-        }
+  loading.value = true
 
-        // Store JWT
-        localStorage.setItem(
-          "token",
-          response.data.access_token
-        );
+  message.value = ''
 
-        localStorage.setItem(
-          "role",
-          response.data.role
-        );
+  try {
 
-        localStorage.setItem(
-          "name",
-          response.data.name
-        );
+    // ======================================
+    // API CALL
+    // ======================================
 
-        this.message = response.data.message;
+    const response = await axios.post(
 
-        // Redirect Based On Role
-        if (backendRole === "admin") {
+      'http://127.0.0.1:5000/api/login',
 
-          this.$router.push("/admin-dashboard");
+      form.value
 
-        }
+    )
 
-        else if (backendRole === "student") {
+    const data = response.data
 
-          this.$router.push("/Studentdashboard/" + response.data.name);
 
-        }
+    // ======================================
+    // ROLE VALIDATION
+    // ======================================
 
-        else if (backendRole === "company") {
+    if (
 
-          this.$router.push("/company/dashboard");
+      data.user?.role?.toLowerCase() !==
+      selectedRole.value.toLowerCase()
 
-        }
+    ) {
 
-      }
+      message.value =
+        'Selected role does not match account.'
 
-      catch (error) {
+      loading.value = false
 
-        if (error.response) {
+      return
 
-          this.message = error.response.data.message;
-
-        }
-
-        else {
-
-          this.message = "Server Error";
-
-        }
-      }
     }
+
+
+    // ======================================
+    // SAVE TOKEN
+    // ======================================
+
+    localStorage.setItem(
+      'token',
+      data.access_token
+    )
+
+
+    // ======================================
+    // SAVE USER
+    // ======================================
+
+    localStorage.setItem(
+
+      'user',
+
+      JSON.stringify(data.user)
+
+    )
+
+
+    // ======================================
+    // REDIRECT USER
+    // ======================================
+
+    if (
+
+      data.user.role.toLowerCase() === 'admin'
+
+    ) {
+
+      router.push('/admin')
+
+    }
+
+    else if (
+
+      data.user.role.toLowerCase() === 'company'
+
+    ) {
+
+      router.push(`/company-dashboard/${data.user.name}`)
+
+    }
+
+    else if (
+
+      data.user.role.toLowerCase() === 'student'
+
+    ) {
+
+      router.push(`/student-dashboard/${data.user.name}`)
+
+    }
+
+    else {
+
+      router.push('/')
+
+    }
+
   }
-};
+
+  catch (error) {
+
+    console.log(error)
+
+    if (
+
+      error.response?.data?.message
+
+    ) {
+
+      message.value =
+        error.response.data.message
+
+    }
+
+    else {
+
+      message.value =
+        'Login failed. Please try again.'
+
+    }
+
+  }
+
+  finally {
+
+    loading.value = false
+
+  }
+
+}
+
 </script>
 
 <style scoped>
 
-.login-container {
+/* ======================================
+MAIN LAYOUT
+====================================== */
+
+.login-page {
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;
 
   min-height: 100vh;
 
-  display: flex;
+}
 
+
+/* ======================================
+LEFT SECTION
+====================================== */
+
+.login-left {
+
+  background:
+    linear-gradient(
+      rgba(15,23,42,0.82),
+      rgba(37,99,235,0.82)
+    ),
+    url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1200');
+
+  background-size: cover;
+  background-position: center;
+
+  display: flex;
+  align-items: center;
   justify-content: center;
 
+  padding: 40px;
+
+}
+
+.overlay {
+
+  color: white;
+
+}
+
+.brand-content h1 {
+
+  font-size: 58px;
+  font-weight: 800;
+
+  margin-bottom: 18px;
+
+}
+
+.brand-content p {
+
+  font-size: 20px;
+
+  color: #e2e8f0;
+
+  margin-bottom: 40px;
+
+}
+
+.features {
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 20px;
+
+}
+
+.feature-item {
+
+  display: flex;
   align-items: center;
 
-  background-color: #f4f7fb;
+  gap: 14px;
 
-  padding: 20px;
+  font-size: 17px;
+
 }
+
+.feature-item i {
+
+  color: #22c55e;
+
+}
+
+
+/* ======================================
+RIGHT SECTION
+====================================== */
+
+.login-right {
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #f8fafc;
+
+  padding: 30px;
+
+}
+
+
+/* ======================================
+LOGIN CARD
+====================================== */
 
 .login-card {
 
   width: 100%;
-
   max-width: 450px;
 
-  background-color: white;
+  background: white;
 
   padding: 40px;
 
-  border-radius: 12px;
+  border-radius: 24px;
 
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+
 }
 
-.title {
-
-  text-align: center;
-
-  font-size: 32px;
-
-  font-weight: bold;
-
-  margin-bottom: 10px;
-
-  color: #1e3a8a;
-}
-
-.subtitle {
-
-  text-align: center;
-
-  color: #666;
+.login-header {
 
   margin-bottom: 30px;
+
 }
+
+.login-header h2 {
+
+  font-size: 34px;
+  font-weight: 700;
+
+  margin-bottom: 8px;
+
+}
+
+.login-header p {
+
+  color: #64748b;
+
+}
+
+
+/* ======================================
+FORM
+====================================== */
 
 .form-group {
 
   margin-bottom: 20px;
+
 }
 
-label {
+.form-group label {
 
   display: block;
 
@@ -269,84 +524,92 @@ label {
 
   font-weight: 600;
 
-  color: #333;
 }
 
-.form-control {
+.form-group input,
+.form-group select {
 
   width: 100%;
 
-  padding: 12px;
-
-  border: 1px solid #ccc;
-
-  border-radius: 8px;
-
-  font-size: 15px;
-
-  transition: 0.3s;
-}
-
-.form-control:focus {
+  border: 1px solid #dbe2ea;
 
   outline: none;
 
-  border-color: #2563eb;
+  padding: 14px 16px;
 
-  box-shadow: 0 0 5px rgba(37, 99, 235, 0.3);
+  border-radius: 14px;
+
+  background: #f8fafc;
+
+  font-size: 15px;
+
 }
+
+
+/* ======================================
+BUTTON
+====================================== */
 
 .login-btn {
 
   width: 100%;
 
-  padding: 14px;
-
   border: none;
 
-  border-radius: 8px;
-
-  background-color: #2563eb;
-
+  background: #2563eb;
   color: white;
 
-  font-size: 16px;
+  padding: 14px;
 
-  font-weight: bold;
+  border-radius: 14px;
+
+  font-size: 16px;
+  font-weight: 600;
+
+  margin-top: 10px;
+
+  transition: 0.3s;
 
   cursor: pointer;
 
-  transition: 0.3s;
 }
 
 .login-btn:hover {
 
-  background-color: #1d4ed8;
+  background: #1d4ed8;
+
 }
 
-.message {
+.login-btn:disabled {
 
-  margin-top: 20px;
+  opacity: 0.7;
+
+  cursor: not-allowed;
+
+}
+
+
+/* ======================================
+FOOTER
+====================================== */
+
+.login-footer {
 
   text-align: center;
 
-  font-weight: 600;
-
-  color: green;
-}
-
-.register-links {
-
   margin-top: 25px;
 
-  display: flex;
-
-  justify-content: space-between;
-
-  gap: 10px;
 }
 
-.register-links a {
+.login-footer p {
+
+  color: #64748b;
+
+  margin-bottom: 8px;
+
+}
+
+.login-footer a {
 
   text-decoration: none;
 
@@ -354,32 +617,68 @@ label {
 
   font-weight: 600;
 
-  font-size: 14px;
 }
 
-.register-links a:hover {
 
-  text-decoration: underline;
+/* ======================================
+MESSAGE BOX
+====================================== */
+
+.message-box {
+
+  background: #fee2e2;
+
+  color: #991b1b;
+
+  padding: 14px;
+
+  border-radius: 12px;
+
+  margin-bottom: 20px;
+
 }
 
-@media (max-width: 768px) {
+
+/* ======================================
+RESPONSIVE
+====================================== */
+
+@media (max-width: 992px) {
+
+  .login-page {
+
+    grid-template-columns: 1fr;
+
+  }
+
+  .login-left {
+
+    display: none;
+
+  }
+
+}
+
+@media (max-width: 576px) {
+
+  .login-right {
+
+    padding: 18px;
+
+  }
 
   .login-card {
 
     padding: 25px;
+
   }
 
-  .title {
+  .brand-content h1 {
 
-    font-size: 26px;
+    font-size: 42px;
+
   }
 
-  .register-links {
-
-    flex-direction: column;
-
-    align-items: center;
-  }
 }
 
 </style>

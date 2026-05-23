@@ -4,444 +4,207 @@
     <!-- Sidebar -->
     <aside class="sidebar">
 
+      <!-- Brand -->
       <div>
 
         <div class="brand">
-          <h2>Eduvora</h2>
-          <p>Admin Dashboard</p>
+
+          <div class="brand-logo">
+            E
+          </div>
+
+          <div>
+            <h2>Eduvora</h2>
+            <p>Admin Panel</p>
+          </div>
+
         </div>
 
+        <!-- Menu -->
         <ul class="menu">
 
-          <li
-            :class="{ active: activeMenu === 'dashboard' }"
-            @click="activeMenu = 'dashboard'"
+          <RouterLink
+            to="/admin"
+            class="menu-link"
           >
-            <i class="bi bi-grid-fill"></i>
-            Dashboard
-          </li>
+            <li>
 
-          <li
-            :class="{ active: activeMenu === 'companies' }"
-            @click="activeMenu = 'companies'"
-          >
-            <i class="bi bi-buildings-fill"></i>
-            Companies
-          </li>
+              <div class="menu-item">
 
-          <li
-            :class="{ active: activeMenu === 'students' }"
-            @click="activeMenu = 'students'"
-          >
-            <i class="bi bi-people-fill"></i>
-            Students
-          </li>
+                <i class="bi bi-grid-fill"></i>
 
-          <li
-            :class="{ active: activeMenu === 'drives' }"
-            @click="activeMenu = 'drives'"
-          >
-            <i class="bi bi-briefcase-fill"></i>
-            Placement Drives
-          </li>
+                <span>Dashboard</span>
 
-          <li
-            :class="{ active: activeMenu === 'applications' }"
-            @click="activeMenu = 'applications'"
+              </div>
+
+            </li>
+          </RouterLink>
+
+          <RouterLink
+            to="/admin/companies"
+            class="menu-link"
           >
-            <i class="bi bi-file-earmark-text-fill"></i>
-            Applications
-          </li>
+            <li>
+
+              <div class="menu-item">
+
+                <i class="bi bi-buildings-fill"></i>
+
+                <span>Companies</span>
+
+              </div>
+
+            </li>
+          </RouterLink>
+
+          <RouterLink
+            to="/admin/students"
+            class="menu-link"
+          >
+            <li>
+
+              <div class="menu-item">
+
+                <i class="bi bi-people-fill"></i>
+
+                <span>Students</span>
+
+              </div>
+
+            </li>
+          </RouterLink>
+
+          <RouterLink
+            to="/admin/drives"
+            class="menu-link"
+          >
+            <li>
+
+              <div class="menu-item">
+
+                <i class="bi bi-briefcase-fill"></i>
+
+                <span>Placement Drives</span>
+
+              </div>
+
+            </li>
+          </RouterLink>
+
+          <RouterLink
+            to="/admin/reports"
+            class="menu-link"
+          >
+            <li>
+
+              <div class="menu-item">
+
+                <i class="bi bi-bar-chart-fill"></i>
+
+                <span>Reports</span>
+
+              </div>
+
+            </li>
+          </RouterLink>
+
+          <RouterLink
+            to="/admin/profile"
+            class="menu-link"
+          >
+            <li>
+
+              <div class="menu-item">
+
+                <i class="bi bi-person-circle"></i>
+
+                <span>Profile</span>
+
+              </div>
+
+            </li>
+          </RouterLink>
 
         </ul>
 
       </div>
 
-      <button class="logout-btn" @click="logout">
+      <!-- Logout -->
+      <button
+        class="logout-btn"
+        @click="logout"
+      >
+
+        <i class="bi bi-box-arrow-right"></i>
+
         Logout
+
       </button>
 
     </aside>
 
-    <!-- Main Content -->
+    <!-- Main -->
     <main class="main-content">
 
-      <!-- Navbar -->
+      <!-- Topbar -->
       <div class="topbar">
 
+        <!-- Left -->
         <div>
-          <h3>Welcome Admin</h3>
-          <p>Placement Portal Management Panel</p>
+
+          <h3>
+            Welcome Back, Admin 👋
+          </h3>
+
+          <p>
+            Placement Management Dashboard
+          </p>
+
         </div>
 
-        <div class="search-box">
-          <input
-            type="text"
-            placeholder="Search..."
-            v-model="search"
-          />
+        <!-- Right -->
+        <div class="topbar-right">
+
+          <!-- Search -->
+          <div class="search-box">
+
+            <i class="bi bi-search"></i>
+
+            <input
+              type="text"
+              placeholder="Search..."
+              v-model="search"
+            />
+
+          </div>
+
+          <!-- Admin -->
+          <div class="admin-profile">
+
+            <div class="admin-avatar">
+              A
+            </div>
+
+            <div>
+
+              <h6>Administrator</h6>
+
+              <small>
+                Admin Access
+              </small>
+
+            </div>
+
+          </div>
+
         </div>
 
       </div>
 
-      <!-- Loading -->
-      <div v-if="loading" class="loading-box">
-        Loading Dashboard...
-      </div>
+      <!-- Dynamic Pages -->
+      <div class="page-content">
 
-      <div v-else>
-
-        <!-- Dashboard -->
-        <section v-if="activeMenu === 'dashboard'">
-
-          <div class="stats-grid">
-
-            <div class="stat-card">
-              <h5>Total Students</h5>
-              <h2>{{ students.length }}</h2>
-            </div>
-
-            <div class="stat-card">
-              <h5>Total Companies</h5>
-              <h2>{{ companies.length }}</h2>
-            </div>
-
-            <div class="stat-card">
-              <h5>Total Drives</h5>
-              <h2>{{ drives.length }}</h2>
-            </div>
-
-            <div class="stat-card">
-              <h5>Total Applications</h5>
-              <h2>{{ applications.length }}</h2>
-            </div>
-
-          </div>
-
-          <!-- Recent Drives -->
-          <div class="section-card">
-
-            <div class="section-header">
-              <h4>Recent Placement Drives</h4>
-            </div>
-
-            <div v-if="drives.length === 0" class="empty-box">
-              <i class="bi bi-briefcase"></i>
-              <h5>No Placement Drives Found</h5>
-            </div>
-
-            <div v-else class="table-responsive">
-
-              <table class="table custom-table">
-
-                <thead>
-                  <tr>
-                    <th>Company</th>
-                    <th>Role</th>
-                    <th>Status</th>
-                    <th>Deadline</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-
-                  <tr
-                    v-for="drive in drives.slice(0, 5)"
-                    :key="drive.id"
-                  >
-                    <td>{{ drive.company_name }}</td>
-                    <td>{{ drive.job_title }}</td>
-
-                    <td>
-                      <span
-                        class="status-badge"
-                        :class="drive.status.toLowerCase()"
-                      >
-                        {{ drive.status }}
-                      </span>
-                    </td>
-
-                    <td>{{ drive.deadline }}</td>
-                  </tr>
-
-                </tbody>
-
-              </table>
-
-            </div>
-
-          </div>
-
-        </section>
-
-        <!-- Companies -->
-        <section v-if="activeMenu === 'companies'">
-
-          <div class="section-card">
-
-            <div class="section-header">
-              <h4>Registered Companies</h4>
-            </div>
-
-            <div v-if="companies.length === 0" class="empty-box">
-              <i class="bi bi-buildings"></i>
-              <h5>No Companies Found</h5>
-            </div>
-
-            <div v-else class="table-responsive">
-
-              <table class="table custom-table">
-
-                <thead>
-                  <tr>
-                    <th>Company</th>
-                    <th>Email</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-
-                  <tr
-                    v-for="company in filteredCompanies"
-                    :key="company.id"
-                  >
-
-                    <td>{{ company.company_name }}</td>
-
-                    <td>{{ company.email }}</td>
-
-                    <td>
-                      <span
-                        class="status-badge"
-                        :class="company.status.toLowerCase()"
-                      >
-                        {{ company.status }}
-                      </span>
-                    </td>
-
-                    <td>
-
-                      <button
-                        class="approve-btn"
-                        @click="approveCompany(company.id)"
-                      >
-                        Approve
-                      </button>
-
-                      <button
-                        class="reject-btn"
-                        @click="rejectCompany(company.id)"
-                      >
-                        Reject
-                      </button>
-
-                    </td>
-
-                  </tr>
-
-                </tbody>
-
-              </table>
-
-            </div>
-
-          </div>
-
-        </section>
-
-        <!-- Students -->
-        <section v-if="activeMenu === 'students'">
-
-          <div class="section-card">
-
-            <div class="section-header">
-              <h4>Students</h4>
-            </div>
-
-            <div v-if="students.length === 0" class="empty-box">
-              <i class="bi bi-people"></i>
-              <h5>No Students Found</h5>
-            </div>
-
-            <div v-else class="table-responsive">
-
-              <table class="table custom-table">
-
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Branch</th>
-                    <th>CGPA</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-
-                  <tr
-                    v-for="student in filteredStudents"
-                    :key="student.id"
-                  >
-
-                    <td>{{ student.name }}</td>
-                    <td>{{ student.email }}</td>
-                    <td>{{ student.branch }}</td>
-                    <td>{{ student.cgpa }}</td>
-
-                  </tr>
-
-                </tbody>
-
-              </table>
-
-            </div>
-
-          </div>
-
-        </section>
-
-        <!-- Drives -->
-        <section v-if="activeMenu === 'drives'">
-
-          <div class="section-card">
-
-            <div class="section-header">
-              <h4>Placement Drives</h4>
-            </div>
-
-            <div v-if="drives.length === 0" class="empty-box">
-              <i class="bi bi-briefcase"></i>
-              <h5>No Drives Found</h5>
-            </div>
-
-            <div v-else class="table-responsive">
-
-              <table class="table custom-table">
-
-                <thead>
-                  <tr>
-                    <th>Company</th>
-                    <th>Role</th>
-                    <th>Deadline</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-
-                  <tr
-                    v-for="drive in filteredDrives"
-                    :key="drive.id"
-                  >
-
-                    <td>{{ drive.company_name }}</td>
-
-                    <td>{{ drive.job_title }}</td>
-
-                    <td>{{ drive.deadline }}</td>
-
-                    <td>
-                      <span
-                        class="status-badge"
-                        :class="drive.status.toLowerCase()"
-                      >
-                        {{ drive.status }}
-                      </span>
-                    </td>
-
-                    <td>
-
-                      <button
-                        class="approve-btn"
-                        @click="approveDrive(drive.id)"
-                      >
-                        Approve
-                      </button>
-
-                      <button
-                        class="reject-btn"
-                        @click="rejectDrive(drive.id)"
-                      >
-                        Reject
-                      </button>
-
-                    </td>
-
-                  </tr>
-
-                </tbody>
-
-              </table>
-
-            </div>
-
-          </div>
-
-        </section>
-
-        <!-- Applications -->
-        <section v-if="activeMenu === 'applications'">
-
-          <div class="section-card">
-
-            <div class="section-header">
-              <h4>Applications</h4>
-            </div>
-
-            <div v-if="applications.length === 0" class="empty-box">
-              <i class="bi bi-file-earmark"></i>
-              <h5>No Applications Found</h5>
-            </div>
-
-            <div v-else class="table-responsive">
-
-              <table class="table custom-table">
-
-                <thead>
-                  <tr>
-                    <th>Student</th>
-                    <th>Company</th>
-                    <th>Role</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-
-                  <tr
-                    v-for="application in applications"
-                    :key="application.id"
-                  >
-
-                    <td>{{ application.student_name }}</td>
-
-                    <td>{{ application.company_name }}</td>
-
-                    <td>{{ application.job_title }}</td>
-
-                    <td>
-                      <span
-                        class="status-badge"
-                        :class="application.status.toLowerCase()"
-                      >
-                        {{ application.status }}
-                      </span>
-                    </td>
-
-                  </tr>
-
-                </tbody>
-
-              </table>
-
-            </div>
-
-          </div>
-
-        </section>
+        <RouterView />
 
       </div>
 
@@ -451,229 +214,23 @@
 </template>
 
 <script setup>
-import axios from 'axios'
-import { computed, onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref } from 'vue'
+
+import {
+  RouterLink,
+  RouterView,
+  useRouter,
+} from 'vue-router'
 
 const router = useRouter()
 
-const loading = ref(true)
-
-const activeMenu = ref('dashboard')
-
 const search = ref('')
-
-const students = ref([])
-
-const companies = ref([])
-
-const drives = ref([])
-
-const applications = ref([])
-
-const fetchDashboard = async () => {
-
-  try {
-
-    const token = localStorage.getItem('token')
-
-    // Students
-    const studentsResponse = await axios.get(
-      'http://127.0.0.1:5000/api/admin/students',
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    )
-
-    students.value = studentsResponse.data || []
-
-    // Companies
-    const companiesResponse = await axios.get(
-      'http://127.0.0.1:5000/api/admin/companies',
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    )
-
-    companies.value = companiesResponse.data || []
-
-    // Drives
-    const drivesResponse = await axios.get(
-      'http://127.0.0.1:5000/api/admin/drives',
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    )
-
-    drives.value = drivesResponse.data || []
-
-    // Applications
-    const applicationsResponse = await axios.get(
-      'http://127.0.0.1:5000/api/admin/applications',
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    )
-
-    applications.value = applicationsResponse.data || []
-
-  } catch (error) {
-
-    console.log(error)
-
-  } finally {
-
-    loading.value = false
-  }
-}
-
-onMounted(() => {
-  fetchDashboard()
-})
-
-const filteredCompanies = computed(() => {
-
-  return companies.value.filter((company) => {
-
-    return (
-      company.company_name
-        ?.toLowerCase()
-        .includes(search.value.toLowerCase())
-    )
-  })
-})
-
-const filteredStudents = computed(() => {
-
-  return students.value.filter((student) => {
-
-    return (
-      student.name
-        ?.toLowerCase()
-        .includes(search.value.toLowerCase())
-    )
-  })
-})
-
-const filteredDrives = computed(() => {
-
-  return drives.value.filter((drive) => {
-
-    return (
-      drive.job_title
-        ?.toLowerCase()
-        .includes(search.value.toLowerCase())
-    )
-  })
-})
-
-const approveCompany = async (companyId) => {
-
-  try {
-
-    const token = localStorage.getItem('token')
-
-    await axios.put(
-      `http://127.0.0.1:5000/api/admin/company/approve/${companyId}`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    )
-
-    fetchDashboard()
-
-  } catch (error) {
-
-    console.log(error)
-  }
-}
-
-const rejectCompany = async (companyId) => {
-
-  try {
-
-    const token = localStorage.getItem('token')
-
-    await axios.put(
-      `http://127.0.0.1:5000/api/admin/company/reject/${companyId}`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    )
-
-    fetchDashboard()
-
-  } catch (error) {
-
-    console.log(error)
-  }
-}
-
-const approveDrive = async (driveId) => {
-
-  try {
-
-    const token = localStorage.getItem('token')
-
-    await axios.put(
-      `http://127.0.0.1:5000/api/admin/drive/approve/${driveId}`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    )
-
-    fetchDashboard()
-
-  } catch (error) {
-
-    console.log(error)
-  }
-}
-
-const rejectDrive = async (driveId) => {
-
-  try {
-
-    const token = localStorage.getItem('token')
-
-    await axios.put(
-      `http://127.0.0.1:5000/api/admin/drive/reject/${driveId}`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    )
-
-    fetchDashboard()
-
-  } catch (error) {
-
-    console.log(error)
-  }
-}
 
 const logout = () => {
 
   localStorage.removeItem('token')
+
+  localStorage.removeItem('user')
 
   router.push('/login')
 }
@@ -688,196 +245,246 @@ const logout = () => {
 
 /* Sidebar */
 .sidebar {
-  width: 270px;
+  width: 280px;
   background: #0f172a;
   color: white;
-  padding: 25px 18px;
+
+  padding: 24px 18px;
 
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+
+  position: sticky;
+  top: 0;
+
+  height: 100vh;
+}
+
+/* Brand */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  margin-bottom: 45px;
+}
+
+.brand-logo {
+  width: 52px;
+  height: 52px;
+
+  border-radius: 14px;
+
+  background: #2563eb;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 24px;
+  font-weight: 700;
 }
 
 .brand h2 {
+  margin-bottom: 2px;
+  font-size: 24px;
   font-weight: 700;
 }
 
 .brand p {
-  color: #cbd5e1;
+  color: #94a3b8;
   font-size: 14px;
+  margin: 0;
 }
 
+/* Menu */
 .menu {
   list-style: none;
   padding: 0;
-  margin-top: 40px;
+  margin: 0;
+}
+
+.menu-link {
+  text-decoration: none;
 }
 
 .menu li {
-  padding: 14px 16px;
   margin-bottom: 12px;
-  border-radius: 12px;
 
-  cursor: pointer;
-
-  display: flex;
-  align-items: center;
-  gap: 12px;
+  border-radius: 14px;
 
   transition: 0.3s;
 }
 
-.menu li:hover,
-.menu li.active {
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  padding: 14px 16px;
+
+  color: #e2e8f0;
+
+  font-weight: 500;
+}
+
+.menu-item i {
+  font-size: 18px;
+}
+
+/* Active Route */
+.router-link-active li {
   background: #1e293b;
 }
 
+.router-link-active .menu-item {
+  color: white;
+}
+
+/* Hover */
+.menu li:hover {
+  background: #1e293b;
+}
+
+/* Logout */
 .logout-btn {
   border: none;
+
   background: #dc2626;
   color: white;
-  padding: 12px;
-  border-radius: 12px;
+
+  padding: 14px;
+
+  border-radius: 14px;
+
   font-weight: 600;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  transition: 0.3s;
+}
+
+.logout-btn:hover {
+  background: #b91c1c;
 }
 
 /* Main */
 .main-content {
   flex: 1;
-  padding: 30px;
+
+  padding: 28px;
+
+  overflow-x: hidden;
 }
 
-/* Navbar */
+/* Topbar */
 .topbar {
+  background: white;
+
+  padding: 22px 26px;
+
+  border-radius: 20px;
+
+  margin-bottom: 25px;
+
   display: flex;
   justify-content: space-between;
   align-items: center;
 
-  margin-bottom: 30px;
-
-  flex-wrap: wrap;
-  gap: 15px;
-}
-
-.search-box input {
-  border: none;
-  padding: 12px 16px;
-  border-radius: 12px;
-  width: 280px;
-}
-
-/* Stats */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 20px;
+  flex-wrap: wrap;
 
-  margin-bottom: 25px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
 }
 
-.stat-card {
-  background: white;
-  border-radius: 18px;
-  padding: 25px;
-
-  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
-}
-
-.stat-card h5 {
-  color: #64748b;
-}
-
-.stat-card h2 {
-  margin-top: 12px;
+.topbar h3 {
+  margin-bottom: 5px;
   font-weight: 700;
 }
 
-/* Sections */
-.section-card {
-  background: white;
-  border-radius: 18px;
-  padding: 25px;
-
-  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
-}
-
-.section-header {
-  margin-bottom: 25px;
-}
-
-/* Empty */
-.empty-box {
-  text-align: center;
-  padding: 60px 20px;
+.topbar p {
+  margin: 0;
   color: #64748b;
 }
 
-.empty-box i {
-  font-size: 60px;
-  margin-bottom: 15px;
+/* Right */
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+
+  flex-wrap: wrap;
 }
 
-/* Table */
-.custom-table thead {
-  background: #0f172a;
-  color: white;
+/* Search */
+.search-box {
+  position: relative;
 }
 
-.custom-table {
+.search-box i {
+  position: absolute;
+
+  top: 50%;
+  left: 14px;
+
+  transform: translateY(-50%);
+
+  color: #94a3b8;
+}
+
+.search-box input {
+  width: 260px;
+
+  border: 1px solid #dbe2ea;
+  outline: none;
+
+  background: #f8fafc;
+
+  padding: 12px 16px 12px 42px;
+
   border-radius: 12px;
-  overflow: hidden;
 }
 
-/* Buttons */
-.approve-btn,
-.reject-btn {
-  border: none;
-  padding: 8px 14px;
-  border-radius: 8px;
+/* Admin */
+.admin-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-avatar {
+  width: 48px;
+  height: 48px;
+
+  border-radius: 50%;
+
+  background: #2563eb;
   color: white;
-  font-weight: 600;
-  margin-right: 8px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: 700;
+  font-size: 18px;
 }
 
-.approve-btn {
-  background: #16a34a;
-}
-
-.reject-btn {
-  background: #dc2626;
-}
-
-/* Status */
-.status-badge {
-  padding: 6px 14px;
-  border-radius: 30px;
-  font-size: 13px;
+.admin-profile h6 {
+  margin: 0;
   font-weight: 600;
 }
 
-.pending {
-  background: #fef3c7;
-  color: #92400e;
+.admin-profile small {
+  color: #64748b;
 }
 
-.approved {
-  background: #dcfce7;
-  color: #166534;
-}
-
-.rejected {
-  background: #fee2e2;
-  color: #991b1b;
-}
-
-/* Loading */
-.loading-box {
-  background: white;
-  border-radius: 18px;
-  padding: 80px;
-  text-align: center;
-  font-size: 20px;
-  font-weight: 600;
+/* Page */
+.page-content {
+  width: 100%;
 }
 
 /* Responsive */
@@ -889,22 +496,54 @@ const logout = () => {
 
   .sidebar {
     width: 100%;
+    height: auto;
+
+    position: relative;
   }
 
   .main-content {
-    padding: 20px;
+    padding: 18px;
+  }
+
+  .menu {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .menu li {
+    margin-bottom: 0;
   }
 }
 
 @media (max-width: 576px) {
 
   .topbar {
-    flex-direction: column;
-    align-items: flex-start;
+    padding: 18px;
+  }
+
+  .topbar-right {
+    width: 100%;
+  }
+
+  .search-box {
+    width: 100%;
   }
 
   .search-box input {
     width: 100%;
+  }
+
+  .admin-profile {
+    width: 100%;
+  }
+
+  .main-content {
+    padding: 14px;
+  }
+
+  .brand {
+    margin-bottom: 25px;
   }
 }
 </style>

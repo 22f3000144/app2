@@ -1,3 +1,4 @@
+from backend.controllers.company_api import ShortlistedStudentsAPI
 from flask import Flask
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
@@ -120,7 +121,48 @@ def create_app():
         ProfileAPI
     )
 
-    # Basic Route
+    from controllers.admin_api import (
+
+        # ======================================
+        # ADMIN APIs
+        # ======================================
+
+        AdminDashboardAPI,
+        ManageCompaniesAPI,
+        ApproveCompanyAPI,
+        RejectCompanyAPI,
+        DeactivateCompanyAPI,
+        # ReportsAPI,
+        ManageStudentsAPI,
+        DeactivateStudentAPI,
+
+        ManageDrivesAPI,
+        ApproveDriveAPI,
+        RejectDriveAPI,
+
+        ViewApplicationsAPI,
+        SearchUsersAPI,
+    )
+        # ======================================
+        # COMPANY APIs 
+        # ======================================
+    from controllers.company_api import (
+        CompanyDashboardAPI,
+        CreateDriveAPI,
+        CompanyDrivesAPI,
+        UpdateDriveAPI,
+        DeleteDriveAPI,
+        ShortlistedStudentsAPI,
+        ViewApplicantsAPI,
+        UpdateApplicationStatusAPI,
+        ScheduleInterviewAPI
+    )
+
+
+    # ======================================
+    # BASIC ROUTES
+    # ======================================
+
     app.add_url_rule(
         "/",
         view_func=lambda: {
@@ -128,7 +170,11 @@ def create_app():
         }
     )
 
-    # Health Check
+
+    # ======================================
+    # HEALTH CHECK
+    # ======================================
+
     @app.route("/check")
     def check():
 
@@ -136,6 +182,7 @@ def create_app():
             "status": "success",
             "message": "Eduvora Backend Running"
         }, 200
+
 
     # ======================================
     # AUTH ROUTES
@@ -160,6 +207,120 @@ def create_app():
         ProfileAPI,
         "/api/profile"
     )
+
+
+    # ======================================
+    # ADMIN ROUTES
+    # ======================================
+
+    api.add_resource(
+        AdminDashboardAPI,
+        "/api/admin/dashboard"
+    )
+
+    api.add_resource(
+        ManageCompaniesAPI,
+        "/api/admin/companies"
+    )
+
+    api.add_resource(
+        ApproveCompanyAPI,
+        "/api/admin/company/approve/<int:company_id>"
+    )
+
+    api.add_resource(
+        RejectCompanyAPI,
+        "/api/admin/company/reject/<int:company_id>"
+    )
+
+    api.add_resource(
+        DeactivateCompanyAPI,
+        "/api/admin/company/deactivate/<int:company_id>"
+    )
+
+    api.add_resource(
+        ManageStudentsAPI,
+        "/api/admin/students"
+    )
+
+    api.add_resource(
+        DeactivateStudentAPI,
+        "/api/admin/student/deactivate/<int:student_id>"
+    )
+
+    api.add_resource(
+        ManageDrivesAPI,
+        "/api/admin/drives"
+    )
+
+    api.add_resource(
+        ApproveDriveAPI,
+        "/api/admin/drive/approve/<int:drive_id>"
+    )
+
+    api.add_resource(
+        RejectDriveAPI,
+        "/api/admin/drive/reject/<int:drive_id>"
+    )
+
+    api.add_resource(
+        ViewApplicationsAPI,
+        "/api/admin/applications"
+    )
+
+    api.add_resource(
+        SearchUsersAPI,
+        "/api/admin/search"
+    )
+
+
+    # ======================================
+    # COMPANY ROUTES
+    # ======================================
+
+    api.add_resource(
+        CompanyDashboardAPI,
+        "/api/company/dashboard"
+    )
+
+    api.add_resource(
+        CreateDriveAPI,
+        "/api/company/drive/create"
+    )
+    api.add_resource(
+        ShortlistedStudentsAPI,
+        "/api/company/shortlisted-students"
+    )
+    api.add_resource(
+        CompanyDrivesAPI,
+        "/api/company/drives"
+    )
+
+    api.add_resource(
+        UpdateDriveAPI,
+        "/api/company/drive/update/<int:drive_id>"
+    )
+
+    api.add_resource(
+        DeleteDriveAPI,
+        "/api/company/drive/delete/<int:drive_id>"
+    )
+
+    api.add_resource(
+        ViewApplicantsAPI,
+        "/api/company/applicants/<int:drive_id>"
+    )
+
+    api.add_resource(
+        UpdateApplicationStatusAPI,
+        "/api/company/application/status/<int:application_id>"
+    )
+
+    api.add_resource(
+        ScheduleInterviewAPI,
+        "/api/company/interview/schedule/<int:application_id>"
+    )
+
 
     return app, celery
 
