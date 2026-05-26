@@ -9,7 +9,7 @@ const hideNavbar = route.path.includes('/dashboard')
 
 <template>
 
-  <!-- Public Header -->
+  <!-- Public Header
   <header v-if="!hideNavbar">
     <img
       alt="App logo"
@@ -38,7 +38,7 @@ const hideNavbar = route.path.includes('/dashboard')
         </RouterLink>
       </nav>
     </div>
-  </header>
+  </header> -->
 
   <!-- Page Content -->
   <RouterView />

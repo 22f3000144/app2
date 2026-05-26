@@ -1,231 +1,151 @@
 <template>
-  <div class="manage-drive-page">
+  <div class="manage-drives-page">
 
-    <div class="container py-5">
+    <!-- Header -->
+    <div class="page-header">
 
-      <!-- PAGE HEADER -->
+      <div>
+        <h2>Manage Placement Drives</h2>
 
-      <div class="page-header mb-4">
+        <p>
+          View, edit, and manage all recruitment drives
+        </p>
+      </div>
 
-        <div>
+      <router-link
+        to="/company/create-drive"
+        class="create-btn"
+      >
+        + Create Drive
+      </router-link>
 
-          <h2>
-            Manage Placement Drives
-          </h2>
+    </div>
 
-          <p>
-            View, update and manage all created placement drives.
-          </p>
+    <!-- Search -->
+    <div class="search-section">
+
+      <input
+        type="text"
+        v-model="search"
+        placeholder="Search drives by title or branch..."
+      />
+
+    </div>
+
+    <!-- Loading -->
+    <div
+      v-if="loading"
+      class="loading-box"
+    >
+      Loading drives...
+    </div>
+
+    <!-- Empty -->
+    <div
+      v-else-if="filteredDrives.length === 0"
+      class="empty-box"
+    >
+      No placement drives found.
+    </div>
+
+    <!-- Drives Grid -->
+    <div
+      v-else
+      class="drives-grid"
+    >
+
+      <div
+        v-for="drive in filteredDrives"
+        :key="drive.id"
+        class="drive-card"
+      >
+
+        <!-- Top -->
+        <div class="card-top">
+
+          <div>
+
+            <h3>
+              {{ drive.job_title }}
+            </h3>
+
+            <span
+              class="status-badge"
+              :class="drive.status"
+            >
+              {{ drive.status }}
+            </span>
+
+          </div>
+
+          <div class="applicant-box">
+            {{ drive.total_applicants }}
+            <span>Applicants</span>
+          </div>
 
         </div>
 
-        <router-link
-          to="/company/drive/create"
-          class="btn btn-primary"
-        >
-
-          <i class="bi bi-plus-circle me-2"></i>
-
-          Create Drive
-
-        </router-link>
-
-      </div>
-
-      <!-- ALERT -->
-
-      <div
-        v-if="message"
-        class="alert"
-        :class="success ? 'alert-success' : 'alert-danger'"
-      >
-        {{ message }}
-      </div>
-
-      <!-- LOADING -->
-
-      <div
-        v-if="loading"
-        class="loading-section"
-      >
-
-        <div class="spinner-border text-primary"></div>
-
-        <p class="mt-3">
-          Loading placement drives...
+        <!-- Description -->
+        <p class="description">
+          {{ drive.job_description }}
         </p>
 
-      </div>
+        <!-- Details -->
+        <div class="details-grid">
 
-      <!-- EMPTY -->
-
-      <div
-        v-else-if="drives.length === 0"
-        class="empty-card"
-      >
-
-        <i class="bi bi-briefcase"></i>
-
-        <h4>
-          No Placement Drives Found
-        </h4>
-
-        <p>
-          Create your first placement drive to start recruitment.
-        </p>
-
-      </div>
-
-      <!-- DRIVE LIST -->
-
-      <div
-        v-else
-        class="row g-4"
-      >
-
-        <div
-          class="col-lg-6"
-          v-for="drive in drives"
-          :key="drive.id"
-        >
-
-          <div class="drive-card">
-
-            <!-- HEADER -->
-
-            <div class="drive-top">
-
-              <div>
-
-                <h4>
-                  {{ drive.job_title }}
-                </h4>
-
-                <span
-                  class="status-badge"
-                  :class="getStatusClass(drive.status)"
-                >
-                  {{ drive.status }}
-                </span>
-
-              </div>
-
-              <div class="applicant-box">
-
-                <h5>
-                  {{ drive.total_applicants }}
-                </h5>
-
-                <span>
-                  Applicants
-                </span>
-
-              </div>
-
-            </div>
-
-            <!-- BODY -->
-
-            <div class="drive-body">
-
-              <p class="description">
-                {{ drive.job_description }}
-              </p>
-
-              <div class="detail-grid">
-
-                <div class="detail-item">
-
-                  <span class="label">
-                    Branch
-                  </span>
-
-                  <span class="value">
-                    {{ drive.required_branch }}
-                  </span>
-
-                </div>
-
-                <div class="detail-item">
-
-                  <span class="label">
-                    Minimum CGPA
-                  </span>
-
-                  <span class="value">
-                    {{ drive.min_cgpa }}
-                  </span>
-
-                </div>
-
-                <div class="detail-item">
-
-                  <span class="label">
-                    Passing Year
-                  </span>
-
-                  <span class="value">
-                    {{ drive.passing_year }}
-                  </span>
-
-                </div>
-
-                <div class="detail-item">
-
-                  <span class="label">
-                    Deadline
-                  </span>
-
-                  <span class="value">
-                    {{ formatDate(drive.application_deadline) }}
-                  </span>
-
-                </div>
-
-              </div>
-
-            </div>
-
-            <!-- FOOTER -->
-
-            <div class="drive-footer">
-
-              <button
-                class="btn btn-outline-primary"
-                @click="openEditModal(drive)"
-              >
-
-                <i class="bi bi-pencil-square me-2"></i>
-
-                Edit
-
-              </button>
-
-              <router-link
-                :to="`/company/drive/${drive.id}/applicants`"
-                class="btn btn-outline-dark"
-              >
-
-                <i class="bi bi-people me-2"></i>
-
-                Applicants
-
-              </router-link>
-
-              <button
-                class="btn btn-outline-danger"
-                @click="deleteDrive(drive.id)"
-              >
-
-                <i class="bi bi-trash me-2"></i>
-
-                Delete
-
-              </button>
-
-            </div>
-
+          <div class="detail-item">
+            <label>Branch</label>
+            <span>
+              {{ drive.required_branch }}
+            </span>
           </div>
+
+          <div class="detail-item">
+            <label>Minimum CGPA</label>
+            <span>
+              {{ drive.min_cgpa }}
+            </span>
+          </div>
+
+          <div class="detail-item">
+            <label>Passing Year</label>
+            <span>
+              {{ drive.passing_year }}
+            </span>
+          </div>
+
+          <div class="detail-item">
+            <label>Deadline</label>
+            <span>
+              {{ formatDate(drive.application_deadline) }}
+            </span>
+          </div>
+
+        </div>
+
+        <!-- Actions -->
+        <div class="actions">
+
+          <button
+            class="view-btn"
+            @click="viewApplicants(drive.id)"
+          >
+            Applicants
+          </button>
+
+          <button
+            class="edit-btn"
+            @click="openEditModal(drive)"
+          >
+            Edit
+          </button>
+
+          <button
+            class="delete-btn"
+            @click="deleteDrive(drive.id)"
+          >
+            Delete
+          </button>
 
         </div>
 
@@ -233,20 +153,17 @@
 
     </div>
 
-    <!-- EDIT MODAL -->
-
+    <!-- Edit Modal -->
     <div
       v-if="showModal"
-      class="custom-modal"
+      class="modal-overlay"
     >
 
-      <div class="modal-card">
+      <div class="modal-box">
 
         <div class="modal-header">
 
-          <h4>
-            Update Placement Drive
-          </h4>
+          <h3>Edit Placement Drive</h3>
 
           <button
             class="close-btn"
@@ -259,89 +176,80 @@
 
         <form @submit.prevent="updateDrive">
 
-          <div class="mb-3">
+          <!-- Job Title -->
+          <div class="form-group">
 
-            <label class="form-label">
-              Job Title
-            </label>
+            <label>Job Title</label>
 
             <input
               type="text"
-              class="form-control"
-              v-model="editForm.job_title"
+              v-model="form.job_title"
+              required
             />
 
           </div>
 
-          <div class="mb-3">
+          <!-- Description -->
+          <div class="form-group">
 
-            <label class="form-label">
-              Job Description
-            </label>
+            <label>Job Description</label>
 
             <textarea
               rows="5"
-              class="form-control"
-              v-model="editForm.job_description"
+              v-model="form.job_description"
+              required
             ></textarea>
 
           </div>
 
-          <div class="row">
+          <!-- Grid -->
+          <div class="form-grid">
 
-            <div class="col-md-6 mb-3">
+            <div class="form-group">
 
-              <label class="form-label">
-                Required Branch
-              </label>
+              <label>Required Branch</label>
 
               <input
                 type="text"
-                class="form-control"
-                v-model="editForm.required_branch"
+                v-model="form.required_branch"
+                required
               />
 
             </div>
 
-            <div class="col-md-6 mb-3">
+            <div class="form-group">
 
-              <label class="form-label">
-                Minimum CGPA
-              </label>
+              <label>Minimum CGPA</label>
 
               <input
                 type="number"
                 step="0.1"
-                class="form-control"
-                v-model="editForm.min_cgpa"
+                v-model="form.min_cgpa"
+                required
               />
 
             </div>
 
-            <div class="col-md-6 mb-3">
+            <div class="form-group">
 
-              <label class="form-label">
-                Passing Year
-              </label>
+              <label>Passing Year</label>
 
               <input
                 type="number"
-                class="form-control"
-                v-model="editForm.passing_year"
+                v-model="form.passing_year"
+                required
               />
 
             </div>
 
-            <div class="col-md-6 mb-3">
+            <div class="form-group">
 
-              <label class="form-label">
-                Deadline
-              </label>
+              <label>Application Deadline</label>
 
               <input
                 type="date"
-                class="form-control"
-                v-model="editForm.application_deadline"
+                v-model="form.application_deadline"
+                required
               />
 
             </div>
@@ -350,16 +258,17 @@
 
           <button
             type="submit"
-            class="btn btn-primary w-100 mt-2"
-            :disabled="updateLoading"
+            class="submit-btn"
+            :disabled="updating"
           >
 
-            <span
-              v-if="updateLoading"
-              class="spinner-border spinner-border-sm me-2"
-            ></span>
+            <span v-if="updating">
+              Updating...
+            </span>
 
-            {{ updateLoading ? "Updating..." : "Update Drive" }}
+            <span v-else>
+              Update Drive
+            </span>
 
           </button>
 
@@ -373,7 +282,7 @@
 </template>
 
 <script>
-import axios from "axios"
+import axios from "axios";
 
 export default {
 
@@ -383,35 +292,56 @@ export default {
 
     return {
 
-      loading: false,
+      loading: true,
 
-      updateLoading: false,
+      updating: false,
 
-      success: false,
-
-      message: "",
+      search: "",
 
       drives: [],
 
       showModal: false,
 
-      editDriveId: null,
+      selectedDriveId: null,
 
-      editForm: {
+      form: {
 
         job_title: "",
-
         job_description: "",
-
         required_branch: "",
-
         min_cgpa: "",
-
         passing_year: "",
-
         application_deadline: ""
 
       }
+
+    };
+
+  },
+
+  computed: {
+
+    filteredDrives() {
+
+      return this.drives.filter((drive) => {
+
+        const keyword = this.search.toLowerCase();
+
+        return (
+
+          drive.job_title
+            .toLowerCase()
+            .includes(keyword)
+
+          ||
+
+          drive.required_branch
+            .toLowerCase()
+            .includes(keyword)
+
+        );
+
+      });
 
     }
 
@@ -419,50 +349,60 @@ export default {
 
   mounted() {
 
-    this.fetchDrives()
+    this.fetchDrives();
 
   },
 
   methods: {
 
+    getHeaders() {
+
+      return {
+
+        headers: {
+
+          Authorization:
+            `Bearer ${localStorage.getItem("token")}`
+
+        }
+
+      };
+
+    },
+
     async fetchDrives() {
 
       try {
-
-        this.loading = true
-
-        const token = localStorage.getItem("token")
 
         const response = await axios.get(
 
           "http://127.0.0.1:5000/api/company/drives",
 
-          {
+          this.getHeaders()
 
-            headers: {
+        );
 
-              Authorization: `Bearer ${token}`
-
-            }
-
-          }
-
-        )
-
-        this.drives = response.data
+        this.drives = response.data;
 
       }
 
       catch (error) {
 
-        this.message =
-          "Failed to load placement drives."
+        console.error(error);
+
+        alert(
+
+          error.response?.data?.message ||
+
+          "Failed to load drives."
+
+        );
 
       }
 
       finally {
 
-        this.loading = false
+        this.loading = false;
 
       }
 
@@ -470,60 +410,48 @@ export default {
 
     formatDate(date) {
 
-      return new Date(date).toLocaleDateString()
+      if (!date) return "-";
 
-    },
-
-    getStatusClass(status) {
-
-      if (status === "approved") {
-
-        return "approved"
-
-      }
-
-      else if (status === "pending") {
-
-        return "pending"
-
-      }
-
-      else {
-
-        return "closed"
-
-      }
+      return new Date(date)
+        .toLocaleDateString();
 
     },
 
     openEditModal(drive) {
 
-      this.editDriveId = drive.id
+      this.showModal = true;
 
-      this.editForm = {
+      this.selectedDriveId = drive.id;
 
-        job_title: drive.job_title,
+      this.form = {
 
-        job_description: drive.job_description,
+        job_title:
+          drive.job_title,
 
-        required_branch: drive.required_branch,
+        job_description:
+          drive.job_description,
 
-        min_cgpa: drive.min_cgpa,
+        required_branch:
+          drive.required_branch,
 
-        passing_year: drive.passing_year,
+        min_cgpa:
+          drive.min_cgpa,
+
+        passing_year:
+          drive.passing_year,
 
         application_deadline:
           drive.application_deadline
 
-      }
-
-      this.showModal = true
+      };
 
     },
 
     closeModal() {
 
-      this.showModal = false
+      this.showModal = false;
+
+      this.selectedDriveId = null;
 
     },
 
@@ -531,122 +459,119 @@ export default {
 
       try {
 
-        this.updateLoading = true
-
-        const token = localStorage.getItem("token")
+        this.updating = true;
 
         const response = await axios.put(
 
-          `http://127.0.0.1:5000/api/company/drive/update/${this.editDriveId}`,
+          `http://127.0.0.1:5000/api/company/drives/${this.selectedDriveId}`,
 
-          this.editForm,
+          this.form,
 
-          {
+          this.getHeaders()
 
-            headers: {
+        );
 
-              Authorization: `Bearer ${token}`
+        alert(
+          response.data.message
+        );
 
-            }
+        this.closeModal();
 
-          }
-
-        )
-
-        this.success = true
-
-        this.message = response.data.message
-
-        this.closeModal()
-
-        this.fetchDrives()
+        this.fetchDrives();
 
       }
 
       catch (error) {
 
-        this.success = false
+        console.error(error);
 
-        this.message =
+        alert(
+
           error.response?.data?.message ||
+
           "Failed to update drive."
+
+        );
 
       }
 
       finally {
 
-        this.updateLoading = false
+        this.updating = false;
 
       }
 
     },
 
-    async deleteDrive(driveId) {
+    async deleteDrive(id) {
 
       const confirmDelete = confirm(
         "Are you sure you want to delete this drive?"
-      )
+      );
 
-      if (!confirmDelete) {
-
-        return
-
-      }
+      if (!confirmDelete) return;
 
       try {
 
-        const token = localStorage.getItem("token")
-
         const response = await axios.delete(
 
-          `http://127.0.0.1:5000/api/company/drive/delete/${driveId}`,
+          `http://127.0.0.1:5000/api/company/drives/${id}`,
 
-          {
+          this.getHeaders()
 
-            headers: {
+        );
 
-              Authorization: `Bearer ${token}`
+        alert(
+          response.data.message
+        );
 
-            }
-
-          }
-
-        )
-
-        this.success = true
-
-        this.message = response.data.message
-
-        this.fetchDrives()
+        this.fetchDrives();
 
       }
 
       catch (error) {
 
-        this.success = false
+        console.error(error);
 
-        this.message =
+        alert(
+
           error.response?.data?.message ||
+
           "Failed to delete drive."
 
+        );
+
       }
+
+    },
+
+    viewApplicants(id) {
+
+      this.$router.push(
+        `/company/applicants/${id}`
+      );
 
     }
 
   }
 
-}
+};
 </script>
 
 <style scoped>
 
-/* =========================
-   PAGE
-========================= */
+.manage-drives-page {
 
-.manage-drive-page {
   min-height: 100vh;
-  background: #f5f7fb;
+  padding: 30px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #fff5f8,
+      #f5f3ff
+    );
+
 }
 
 /* =========================
@@ -654,244 +579,482 @@ export default {
 ========================= */
 
 .page-header {
+
   display: flex;
   justify-content: space-between;
   align-items: center;
+
   gap: 20px;
   flex-wrap: wrap;
+
+  margin-bottom: 30px;
+
 }
 
 .page-header h2 {
-  font-size: 2.3rem;
-  font-weight: 700;
-  color: #0f172a;
+
+  margin: 0;
+  font-size: 34px;
+  color: #312e81;
+
 }
 
 .page-header p {
+
+  margin-top: 8px;
   color: #64748b;
-  margin-top: 10px;
+
+}
+
+.create-btn {
+
+  text-decoration: none;
+
+  background:
+    linear-gradient(
+      135deg,
+      #7c3aed,
+      #dc2626
+    );
+
+  color: white;
+
+  padding: 14px 22px;
+  border-radius: 14px;
+
+  font-weight: 700;
+
+  transition: 0.3s;
+
+}
+
+.create-btn:hover {
+
+  transform: translateY(-2px);
+
 }
 
 /* =========================
-   DRIVE CARD
+   SEARCH
 ========================= */
 
-.drive-card {
+.search-section {
+
+  margin-bottom: 30px;
+
+}
+
+.search-section input {
+
+  width: 100%;
+  max-width: 500px;
+
+  padding: 14px 18px;
+
+  border-radius: 14px;
+  border: 1px solid #dbeafe;
+
+  outline: none;
+  font-size: 15px;
+
   background: white;
-  border-radius: 24px;
-  padding: 28px;
-  height: 100%;
+
+}
+
+.search-section input:focus {
+
+  border-color: #7c3aed;
+
   box-shadow:
-    0 8px 24px rgba(0,0,0,0.05);
-  transition: 0.3s ease;
+    0 0 0 4px rgba(124, 58, 237, 0.08);
+
+}
+
+/* =========================
+   STATES
+========================= */
+
+.loading-box,
+.empty-box {
+
+  background: white;
+
+  padding: 50px;
+  border-radius: 22px;
+
+  text-align: center;
+  font-weight: 700;
+
+}
+
+/* =========================
+   GRID
+========================= */
+
+.drives-grid {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(auto-fit, minmax(350px, 1fr));
+
+  gap: 25px;
+
+}
+
+.drive-card {
+
+  background: white;
+
+  border-radius: 24px;
+
+  padding: 24px;
+
+  box-shadow:
+    0 15px 40px rgba(0,0,0,0.05);
+
+  transition: 0.3s;
+
 }
 
 .drive-card:hover {
-  transform: translateY(-5px);
+
+  transform: translateY(-6px);
+
 }
 
-.drive-top {
+.card-top {
+
   display: flex;
   justify-content: space-between;
-  gap: 20px;
-  margin-bottom: 25px;
+  align-items: flex-start;
+
+  gap: 16px;
+
+  margin-bottom: 20px;
+
 }
 
-.drive-top h4 {
-  font-weight: 700;
-  margin-bottom: 12px;
-  color: #0f172a;
+.card-top h3 {
+
+  margin: 0;
+  color: #1e1b4b;
+
 }
 
 .status-badge {
-  padding: 8px 14px;
+
+  display: inline-block;
+
+  margin-top: 10px;
+
+  padding: 6px 14px;
+
   border-radius: 50px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-transform: capitalize;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+
 }
 
-.approved {
-  background: #dcfce7;
-  color: #15803d;
+.status-badge.pending {
+
+  background: #fff7ed;
+  color: #c2410c;
+
 }
 
-.pending {
-  background: #fef3c7;
-  color: #b45309;
+.status-badge.approved {
+
+  background: #ecfdf5;
+  color: #059669;
+
 }
 
-.closed {
-  background: #fee2e2;
-  color: #b91c1c;
+.status-badge.closed {
+
+  background: #f1f5f9;
+  color: #475569;
+
 }
 
 .applicant-box {
-  text-align: center;
-  background: #eff6ff;
-  border-radius: 18px;
-  padding: 18px;
-  min-width: 100px;
-}
 
-.applicant-box h5 {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: #2563eb;
+  min-width: 90px;
+
+  text-align: center;
+
+  background:
+    linear-gradient(
+      135deg,
+      #7c3aed,
+      #dc2626
+    );
+
+  color: white;
+
+  padding: 14px;
+  border-radius: 16px;
+
+  font-size: 24px;
+  font-weight: bold;
+
 }
 
 .applicant-box span {
-  color: #64748b;
-  font-size: 0.9rem;
-}
 
-/* =========================
-   BODY
-========================= */
+  display: block;
+
+  font-size: 12px;
+  margin-top: 4px;
+
+}
 
 .description {
-  color: #475569;
-  line-height: 1.8;
-  margin-bottom: 25px;
-}
 
-.detail-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 18px;
-}
-
-.detail-item {
-  background: #f8fafc;
-  border-radius: 14px;
-  padding: 16px;
-}
-
-.label {
-  display: block;
-  font-size: 0.8rem;
   color: #64748b;
-  margin-bottom: 8px;
+  line-height: 1.7;
+
+  margin-bottom: 22px;
+
 }
 
-.value {
-  font-weight: 600;
-  color: #0f172a;
+.details-grid {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, 1fr);
+
+  gap: 18px;
+
+  margin-bottom: 25px;
+
+}
+
+.detail-item label {
+
+  display: block;
+
+  font-size: 13px;
+  color: #64748b;
+
+  margin-bottom: 6px;
+
+}
+
+.detail-item span {
+
+  font-weight: 700;
+  color: #334155;
+
 }
 
 /* =========================
-   FOOTER
+   ACTIONS
 ========================= */
 
-.drive-footer {
+.actions {
+
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
-  margin-top: 30px;
+
 }
 
-.drive-footer .btn {
+.actions button {
+
+  flex: 1;
+
+  border: none;
+
+  padding: 12px 16px;
+
   border-radius: 12px;
-  padding: 11px 18px;
-  font-weight: 600;
-}
 
-/* =========================
-   LOADING
-========================= */
+  cursor: pointer;
 
-.loading-section {
-  text-align: center;
-  padding: 80px 20px;
-}
-
-/* =========================
-   EMPTY
-========================= */
-
-.empty-card {
-  background: white;
-  padding: 60px 30px;
-  border-radius: 24px;
-  text-align: center;
-  box-shadow:
-    0 8px 24px rgba(0,0,0,0.05);
-}
-
-.empty-card i {
-  font-size: 4rem;
-  color: #94a3b8;
-}
-
-.empty-card h4 {
-  margin-top: 20px;
   font-weight: 700;
+  transition: 0.3s;
+
 }
 
-.empty-card p {
-  margin-top: 10px;
-  color: #64748b;
+.view-btn {
+
+  background: #7c3aed;
+  color: white;
+
+}
+
+.edit-btn {
+
+  background: #facc15;
+  color: #111827;
+
+}
+
+.delete-btn {
+
+  background: #dc2626;
+  color: white;
+
+}
+
+.actions button:hover {
+
+  transform: translateY(-2px);
+
 }
 
 /* =========================
    MODAL
 ========================= */
 
-.custom-modal {
+.modal-overlay {
+
   position: fixed;
   inset: 0;
-  background: rgba(15,23,42,0.7);
+
+  background: rgba(0,0,0,0.45);
+
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+
   padding: 20px;
   z-index: 999;
+
 }
 
-.modal-card {
+.modal-box {
+
   width: 100%;
-  max-width: 700px;
+  max-width: 800px;
+
   background: white;
-  border-radius: 24px;
-  padding: 35px;
+
+  border-radius: 26px;
+
+  padding: 30px;
+
 }
 
 .modal-header {
+
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
+
+  margin-bottom: 24px;
+
 }
 
-.modal-header h4 {
-  font-weight: 700;
+.modal-header h3 {
+
+  margin: 0;
+  color: #1e1b4b;
+
 }
 
 .close-btn {
+
   border: none;
-  background: none;
-  font-size: 1.3rem;
+  background: transparent;
+
+  font-size: 24px;
   cursor: pointer;
-}
 
-.form-control {
-  border-radius: 12px;
-  padding: 13px 15px;
-  min-height: 50px;
-}
-
-textarea.form-control {
-  min-height: 140px;
-  resize: none;
 }
 
 /* =========================
-   ALERT
+   FORM
 ========================= */
 
-.alert {
+.form-group {
+
+  margin-bottom: 22px;
+
+}
+
+.form-group label {
+
+  display: block;
+
+  margin-bottom: 10px;
+
+  font-weight: 700;
+  color: #334155;
+
+}
+
+.form-group input,
+.form-group textarea {
+
+  width: 100%;
+
+  padding: 14px 16px;
+
   border-radius: 14px;
-  padding: 15px 18px;
+
+  border: 1px solid #dbeafe;
+
+  outline: none;
+
+  background: #fafafa;
+
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+
+  border-color: #7c3aed;
+
+  box-shadow:
+    0 0 0 4px rgba(124, 58, 237, 0.08);
+
+  background: white;
+
+}
+
+.form-grid {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(auto-fit, minmax(220px, 1fr));
+
+  gap: 18px;
+
+}
+
+.submit-btn {
+
+  width: 100%;
+
+  border: none;
+
+  padding: 15px;
+
+  border-radius: 14px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #7c3aed,
+      #dc2626
+    );
+
+  color: white;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  margin-top: 10px;
+
 }
 
 /* =========================
@@ -900,28 +1063,41 @@ textarea.form-control {
 
 @media (max-width: 768px) {
 
-  .detail-grid {
-    grid-template-columns: 1fr;
+  .manage-drives-page {
+
+    padding: 18px;
+
   }
 
-  .drive-top {
+  .page-header {
+
     flex-direction: column;
-  }
+    align-items: flex-start;
 
-  .drive-footer {
-    flex-direction: column;
-  }
-
-  .drive-footer .btn {
-    width: 100%;
-  }
-
-  .modal-card {
-    padding: 25px;
   }
 
   .page-header h2 {
-    font-size: 1.9rem;
+
+    font-size: 28px;
+
+  }
+
+  .details-grid {
+
+    grid-template-columns: 1fr;
+
+  }
+
+  .actions {
+
+    flex-direction: column;
+
+  }
+
+  .actions button {
+
+    width: 100%;
+
   }
 
 }

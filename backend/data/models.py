@@ -151,7 +151,7 @@ class User(db.Model):
         foreign_keys="Placement.student_id"
     )
 
-    # Company -> Final Placements
+    # Company -> Placement Drives
     company_placements = db.relationship(
         "Placement",
         back_populates="placed_company",
@@ -205,7 +205,7 @@ class JobPosition(db.Model):
         db.Text
     )
 
-    required_branch = db.Column(
+    eligible_branch = db.Column(
         db.String(100)
     )
 
@@ -213,7 +213,7 @@ class JobPosition(db.Model):
         db.Float
     )
 
-    passing_year = db.Column(
+    eligible_year = db.Column(
         db.Integer
     )
 
@@ -255,7 +255,8 @@ class JobPosition(db.Model):
     placements = db.relationship(
         "Placement",
         back_populates="job_position",
-        lazy=True
+        lazy=True,
+        foreign_keys="Placement.position_id"
     )
 
     def __repr__(self):
@@ -334,18 +335,16 @@ class Application(db.Model):
 
 class Placement(db.Model):
 
-    __tablename__ = "placements"
+    __tablename__ = "placement_drives"
 
     id = db.Column(
         db.Integer,
         primary_key=True
     )
 
-    student_id = db.Column(
-        db.Integer,
-        db.ForeignKey("users.id"),
-        nullable=False
-    )
+    # ======================================
+    # FOREIGN KEYS
+    # ======================================
 
     company_id = db.Column(
         db.Integer,
@@ -353,18 +352,64 @@ class Placement(db.Model):
         nullable=False
     )
 
+    student_id = db.Column(
+        db.Integer,
+        db.ForeignKey("users.id"),
+        nullable=True
+    )
+
     position_id = db.Column(
         db.Integer,
         db.ForeignKey("job_positions.id"),
+        nullable=True
+    )
+
+    # ======================================
+    # PLACEMENT DETAILS
+    # ======================================
+
+    job_title = db.Column(
+        db.String(150),
         nullable=False
     )
 
-    salary = db.Column(
+    job_description = db.Column(
+        db.Text
+    )
+
+    eligible_branch = db.Column(
+        db.String(100)
+    )
+
+    min_cgpa = db.Column(
+        db.Float,
+        default=0.0
+    )
+
+    eligible_year = db.Column(
+        db.String(20)
+    )
+
+    application_deadline = db.Column(
+        db.DateTime,
+        nullable=False
+    )
+
+    status = db.Column(
+        db.String(20),
+        default="pending"
+    )
+
+    location = db.Column(
+        db.String(100)
+    )
+
+    salary_package = db.Column(
         db.String(50)
     )
 
-    joining_date = db.Column(
-        db.Date
+    drive_date = db.Column(
+        db.DateTime
     )
 
     created_at = db.Column(
@@ -372,22 +417,31 @@ class Placement(db.Model):
         default=datetime.utcnow
     )
 
+    updated_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow
+    )
+
     # ======================================
     # RELATIONSHIPS
     # ======================================
 
-    placed_student = db.relationship(
-        "User",
-        back_populates="placements",
-        foreign_keys=[student_id]
-    )
-
+    # Company who created placement drive
     placed_company = db.relationship(
         "User",
         back_populates="company_placements",
         foreign_keys=[company_id]
     )
 
+    # Student who got placement
+    placed_student = db.relationship(
+        "User",
+        back_populates="placements",
+        foreign_keys=[student_id]
+    )
+
+    # Related job position
     job_position = db.relationship(
         "JobPosition",
         back_populates="placements",
@@ -396,4 +450,4 @@ class Placement(db.Model):
 
     def __repr__(self):
 
-        return f"<Placement {self.id}>"
+        return f"<Placement {self.job_title}>"

@@ -58,6 +58,34 @@
 
         </div>
 
+        <!-- College -->
+        <div class="form-group">
+
+          <label>College</label>
+
+          <input
+            type="text"
+            v-model="form.college"
+            class="form-control"
+            placeholder="Enter College Name"
+          />
+
+        </div>
+
+        <!-- Phone -->
+        <div class="form-group">
+
+          <label>Phone Number</label>
+
+          <input
+            type="tel"
+            v-model="form.phone"
+            class="form-control"
+            placeholder="Enter Phone Number"
+          />
+
+        </div>
+
         <!-- Branch -->
         <div class="form-group">
 
@@ -73,6 +101,20 @@
 
         </div>
 
+        <!-- Skills -->
+        <div class="form-group">
+
+          <label>Skills</label>
+
+          <input
+            type="text"
+            v-model="form.skills"
+            class="form-control"
+            placeholder="HTML, CSS, Vue, Python"
+          />
+
+        </div>
+
         <!-- CGPA -->
         <div class="form-group">
 
@@ -81,6 +123,8 @@
           <input
             type="number"
             step="0.01"
+            min="0"
+            max="10"
             v-model="form.cgpa"
             class="form-control"
             placeholder="Enter CGPA"
@@ -96,6 +140,8 @@
 
           <input
             type="number"
+            min="2020"
+            max="2035"
             v-model="form.year"
             class="form-control"
             placeholder="Enter Passing Year"
@@ -110,10 +156,10 @@
           <label>Resume Link (Optional)</label>
 
           <input
-            type="text"
+            type="url"
             v-model="form.resume"
             class="form-control"
-            placeholder="Resume URL or File Name"
+            placeholder="Resume URL"
           />
 
         </div>
@@ -122,8 +168,9 @@
         <button
           type="submit"
           class="register-btn"
+          :disabled="loading"
         >
-          Register Student
+          {{ loading ? "Registering..." : "Register Student" }}
         </button>
 
       </form>
@@ -152,6 +199,8 @@ export default {
 
     return {
 
+      loading: false,
+
       form: {
 
         name: "",
@@ -160,7 +209,10 @@ export default {
 
         role: "student",
 
+        college: "",
+        phone: "",
         branch: "",
+        skills: "",
         cgpa: "",
         year: "",
         resume: ""
@@ -175,6 +227,10 @@ export default {
   methods: {
 
     async registerStudent() {
+
+      this.loading = true;
+
+      this.message = "";
 
       try {
 
@@ -194,7 +250,10 @@ export default {
 
           role: "student",
 
+          college: "",
+          phone: "",
           branch: "",
+          skills: "",
           cgpa: "",
           year: "",
           resume: ""
@@ -205,17 +264,16 @@ export default {
 
       catch (error) {
 
-        if (error.response) {
+        this.message =
+          error.response?.data?.message ||
+          "Registration Failed";
 
-          this.message = error.response.data.message;
+      }
 
-        }
+      finally {
 
-        else {
+        this.loading = false;
 
-          this.message = "Server Error";
-
-        }
       }
     }
   }
@@ -305,6 +363,8 @@ label {
   font-size: 15px;
 
   transition: 0.3s;
+
+  box-sizing: border-box;
 }
 
 .form-control:focus {
@@ -344,6 +404,13 @@ label {
   background-color: #1d4ed8;
 }
 
+.register-btn:disabled {
+
+  opacity: 0.7;
+
+  cursor: not-allowed;
+}
+
 .message {
 
   margin-top: 20px;
@@ -367,6 +434,7 @@ label {
     font-size: 26px;
   }
 }
+
 .register-links {
 
   margin-top: 25px;
@@ -393,6 +461,5 @@ label {
 
   text-decoration: underline;
 }
-
 
 </style>

@@ -1,147 +1,138 @@
 <template>
   <div class="company-home-page">
 
-    <!-- HERO SECTION -->
+    <!-- Hero Section -->
     <section class="hero-section">
 
-      <div class="container">
+      <div class="hero-content">
 
-        <div class="row align-items-center min-vh-75">
+        <span class="hero-badge">
+          Placement Recruitment Platform
+        </span>
 
-          <!-- LEFT -->
-          <div class="col-lg-6">
+        <h1>
+          Connect With
+          <span>Top Talent</span>
+          Across Campuses
+        </h1>
 
-            <div class="hero-content">
+        <p>
+          Create placement drives, shortlist skilled students,
+          schedule interviews, and streamline hiring with a
+          modern campus recruitment platform.
+        </p>
 
-              <span class="hero-badge">
-                Placement Portal Platform
-              </span>
+        <div class="hero-buttons">
 
-              <h1 class="hero-title">
-                Hire Skilled Students
-                <span>From Top Institutes</span>
-              </h1>
+          <router-link
+            to="/company/dashboard"
+            class="primary-btn"
+          >
+            Go To Dashboard
+          </router-link>
 
-              <p class="hero-description">
-                Create placement drives, manage applications,
-                shortlist talented candidates, and streamline
-                your campus recruitment process through one
-                unified platform.
-              </p>
-
-              <div class="hero-buttons">
-
-                <router-link
-                  to="/company/register"
-                  class="btn btn-primary btn-lg"
-                >
-                  Register Company
-                </router-link>
-
-                <router-link
-                  to="/login"
-                  class="btn btn-outline-light btn-lg"
-                >
-                  Company Login
-                </router-link>
-
-              </div>
-
-            </div>
-
-          </div>
-
-          <!-- RIGHT -->
-          <div class="col-lg-6">
-
-            <div class="hero-image-wrapper">
-
-              <div class="dashboard-card">
-
-                <div class="dashboard-header">
-                  <div class="circle red"></div>
-                  <div class="circle yellow"></div>
-                  <div class="circle green"></div>
-                </div>
-
-                <div class="dashboard-body">
-
-                  <div class="stats-grid">
-
-                    <div class="stat-card">
-                      <h3>120+</h3>
-                      <p>Placement Drives</p>
-                    </div>
-
-                    <div class="stat-card">
-                      <h3>5K+</h3>
-                      <p>Student Applications</p>
-                    </div>
-
-                    <div class="stat-card">
-                      <h3>350+</h3>
-                      <p>Companies</p>
-                    </div>
-
-                    <div class="stat-card">
-                      <h3>92%</h3>
-                      <p>Hiring Success</p>
-                    </div>
-
-                  </div>
-
-                </div>
-
-              </div>
-
-            </div>
-
-          </div>
+          <router-link
+            to="/company/register"
+            class="secondary-btn"
+          >
+            Register Company
+          </router-link>
 
         </div>
 
       </div>
 
+      <div class="hero-image">
+
+        <div class="floating-card purple-card">
+          <h3>2500+</h3>
+          <p>Student Applications</p>
+        </div>
+
+        <div class="floating-card red-card">
+          <h3>120+</h3>
+          <p>Placement Drives</p>
+        </div>
+
+        <div class="main-circle"></div>
+
+      </div>
+
     </section>
 
-    <!-- FEATURES -->
+    <!-- Features -->
     <section class="features-section">
 
-      <div class="container">
+      <div class="section-header">
 
-        <div class="section-header text-center">
+        <h2>Why Companies Prefer Our Platform</h2>
 
-          <h2>
-            Everything Your Recruitment Team Needs
-          </h2>
+        <p>
+          Simplified hiring experience designed for modern
+          campus recruitment.
+        </p>
+
+      </div>
+
+      <div class="feature-grid">
+
+        <div class="feature-card">
+
+          <div class="icon purple-bg">
+            📄
+          </div>
+
+          <h3>Create Drives</h3>
 
           <p>
-            Built according to modern placement workflow requirements
+            Post placement opportunities with eligibility,
+            CGPA criteria, and deadlines in minutes.
           </p>
 
         </div>
 
-        <div class="row g-4 mt-4">
+        <div class="feature-card">
 
-          <div
-            class="col-md-6 col-lg-3"
-            v-for="feature in features"
-            :key="feature.title"
-          >
-
-            <div class="feature-card">
-
-              <div class="feature-icon">
-                <i :class="feature.icon"></i>
-              </div>
-
-              <h4>{{ feature.title }}</h4>
-
-              <p>{{ feature.description }}</p>
-
-            </div>
-
+          <div class="icon red-bg">
+            👨‍🎓
           </div>
+
+          <h3>Manage Applicants</h3>
+
+          <p>
+            View applications, shortlist students,
+            and manage recruitment pipelines efficiently.
+          </p>
+
+        </div>
+
+        <div class="feature-card">
+
+          <div class="icon purple-bg">
+            📅
+          </div>
+
+          <h3>Schedule Interviews</h3>
+
+          <p>
+            Organize interview rounds with date scheduling
+            and candidate status tracking.
+          </p>
+
+        </div>
+
+        <div class="feature-card">
+
+          <div class="icon red-bg">
+            📊
+          </div>
+
+          <h3>Analytics Dashboard</h3>
+
+          <p>
+            Track drives, applications, and selections
+            with clean dashboard insights.
+          </p>
 
         </div>
 
@@ -149,115 +140,34 @@
 
     </section>
 
-    <!-- WORKFLOW -->
-    <section class="workflow-section">
+    <!-- Stats -->
+    <section class="stats-section">
 
-      <div class="container">
+      <div class="stats-card">
 
-        <div class="section-header text-center">
-
-          <h2>
-            Recruitment Workflow
-          </h2>
-
-          <p>
-            Simple and structured hiring process
-          </p>
-
-        </div>
-
-        <div class="row mt-5">
-
-          <div
-            class="col-md-3"
-            v-for="(step, index) in workflow"
-            :key="step.title"
-          >
-
-            <div class="workflow-card">
-
-              <div class="step-number">
-                {{ index + 1 }}
-              </div>
-
-              <h5>{{ step.title }}</h5>
-
-              <p>{{ step.description }}</p>
-
-            </div>
-
-          </div>
-
-        </div>
+        <h2>500+</h2>
+        <p>Partner Companies</p>
 
       </div>
 
-    </section>
+      <div class="stats-card">
 
-    <!-- BENEFITS -->
-    <section class="benefits-section">
+        <h2>20K+</h2>
+        <p>Registered Students</p>
 
-      <div class="container">
+      </div>
 
-        <div class="row align-items-center">
+      <div class="stats-card">
 
-          <div class="col-lg-6">
+        <h2>95%</h2>
+        <p>Placement Success</p>
 
-            <div class="benefits-content">
+      </div>
 
-              <h2>
-                Why Companies Prefer Our Portal
-              </h2>
+      <div class="stats-card">
 
-              <p class="benefit-intro">
-                Designed for efficient placement management
-                and seamless student recruitment.
-              </p>
-
-              <div class="benefit-list">
-
-                <div
-                  class="benefit-item"
-                  v-for="benefit in benefits"
-                  :key="benefit"
-                >
-
-                  <i class="bi bi-check-circle-fill"></i>
-
-                  <span>{{ benefit }}</span>
-
-                </div>
-
-              </div>
-
-            </div>
-
-          </div>
-
-          <div class="col-lg-6">
-
-            <div class="benefit-image">
-
-              <div class="floating-card top-card">
-                <h4>Drive Approval</h4>
-                <p>Admin verified placement process</p>
-              </div>
-
-              <div class="floating-card middle-card">
-                <h4>Application Tracking</h4>
-                <p>Monitor every student application</p>
-              </div>
-
-              <div class="floating-card bottom-card">
-                <h4>Selection Updates</h4>
-                <p>Update shortlisted & selected candidates</p>
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
+        <h2>24/7</h2>
+        <p>Recruitment Access</p>
 
       </div>
 
@@ -266,26 +176,23 @@
     <!-- CTA -->
     <section class="cta-section">
 
-      <div class="container">
+      <div class="cta-content">
 
-        <div class="cta-card text-center">
+        <h2>
+          Start Hiring Smarter Today
+        </h2>
 
-          <h2>
-            Start Your Campus Hiring Journey
-          </h2>
+        <p>
+          Join the platform and recruit the best talent
+          from leading campuses.
+        </p>
 
-          <p>
-            Register your company profile and create placement drives today.
-          </p>
-
-          <router-link
-            to="/company/register"
-            class="btn btn-light btn-lg mt-3"
-          >
-            Get Started
-          </router-link>
-
-        </div>
+        <router-link
+          to="/company/register"
+          class="cta-btn"
+        >
+          Get Started
+        </router-link>
 
       </div>
 
@@ -297,235 +204,222 @@
 <script>
 export default {
 
-  name: "CompanyHomeView",
+  name: "CompanyHomeView"
 
-  data() {
-
-    return {
-
-      features: [
-        {
-          title: "Placement Drives",
-          description:
-            "Create and manage recruitment drives with eligibility rules.",
-          icon: "bi bi-briefcase-fill"
-        },
-        {
-          title: "Application Tracking",
-          description:
-            "Track student applications and manage hiring workflow.",
-          icon: "bi bi-people-fill"
-        },
-        {
-          title: "Shortlisting",
-          description:
-            "Shortlist qualified students and schedule interviews.",
-          icon: "bi bi-person-check-fill"
-        },
-        {
-          title: "Selection Updates",
-          description:
-            "Update application status dynamically for transparency.",
-          icon: "bi bi-clipboard-check-fill"
-        }
-      ],
-
-      workflow: [
-        {
-          title: "Register Company",
-          description:
-            "Create your company profile and wait for admin approval."
-        },
-        {
-          title: "Create Drive",
-          description:
-            "Post placement drives with job roles and eligibility."
-        },
-        {
-          title: "Review Applications",
-          description:
-            "View student applications and shortlist candidates."
-        },
-        {
-          title: "Hire Students",
-          description:
-            "Conduct interviews and finalize student selections."
-        }
-      ],
-
-      benefits: [
-        "Centralized placement management",
-        "Fast application handling",
-        "Student eligibility filtering",
-        "Real-time application updates",
-        "Secure authentication system",
-        "Streamlined recruitment workflow"
-      ]
-
-    }
-
-  }
-
-}
+};
 </script>
 
 <style scoped>
 
-/* =========================
-   GLOBAL
-========================= */
-
 .company-home-page {
-  background: #f5f7fb;
+
+  background: #fff;
+  min-height: 100vh;
   overflow-x: hidden;
-}
 
-.min-vh-75 {
-  min-height: 75vh;
-}
-
-.section-header h2 {
-  font-size: 2.3rem;
-  font-weight: 700;
-  color: #0f172a;
-}
-
-.section-header p {
-  color: #64748b;
-  margin-top: 10px;
-  font-size: 1rem;
 }
 
 /* =========================
-   HERO SECTION
+   HERO
 ========================= */
 
 .hero-section {
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 80px 8%;
+  gap: 60px;
+  min-height: 100vh;
   background:
     linear-gradient(
       135deg,
-      #0f172a,
-      #1e293b,
-      #2563eb
+      #fff5f8,
+      #f6f0ff
     );
-  color: white;
-  padding: 70px 0;
+
+}
+
+.hero-content {
+
+  flex: 1;
+
 }
 
 .hero-badge {
-  background: rgba(255,255,255,0.15);
-  padding: 10px 18px;
-  border-radius: 50px;
+
   display: inline-block;
-  margin-bottom: 20px;
-  font-size: 0.9rem;
+  background: rgba(124, 58, 237, 0.1);
+  color: #7c3aed;
+  padding: 10px 18px;
+  border-radius: 40px;
+  font-size: 14px;
   font-weight: 600;
+  margin-bottom: 24px;
+
 }
 
-.hero-title {
-  font-size: 3.5rem;
-  font-weight: 800;
-  line-height: 1.2;
+.hero-content h1 {
+
+  font-size: 64px;
+  line-height: 1.1;
+  margin-bottom: 24px;
+  color: #1e1b4b;
+
 }
 
-.hero-title span {
-  display: block;
-  color: #93c5fd;
+.hero-content h1 span {
+
+  color: #dc2626;
+
 }
 
-.hero-description {
-  margin-top: 25px;
-  color: #dbeafe;
-  font-size: 1.1rem;
+.hero-content p {
+
+  font-size: 18px;
   line-height: 1.8;
-  max-width: 550px;
+  color: #64748b;
+  max-width: 650px;
+  margin-bottom: 36px;
+
 }
 
 .hero-buttons {
-  margin-top: 35px;
+
   display: flex;
-  gap: 15px;
+  gap: 18px;
   flex-wrap: wrap;
+
 }
 
-.hero-buttons .btn {
+.primary-btn,
+.secondary-btn,
+.cta-btn {
+
+  text-decoration: none;
   padding: 14px 28px;
-  font-weight: 600;
-  border-radius: 12px;
+  border-radius: 14px;
+  font-weight: 700;
+  transition: 0.3s;
+
+}
+
+.primary-btn {
+
+  background:
+    linear-gradient(
+      135deg,
+      #7c3aed,
+      #dc2626
+    );
+
+  color: white;
+
+}
+
+.primary-btn:hover {
+
+  transform: translateY(-2px);
+
+}
+
+.secondary-btn {
+
+  border: 2px solid #7c3aed;
+  color: #7c3aed;
+
+}
+
+.secondary-btn:hover {
+
+  background: #7c3aed;
+  color: white;
+
 }
 
 /* =========================
-   HERO CARD
+   HERO IMAGE
 ========================= */
 
-.hero-image-wrapper {
+.hero-image {
+
+  flex: 1;
+  position: relative;
   display: flex;
   justify-content: center;
-  margin-top: 40px;
+  align-items: center;
+
 }
 
-.dashboard-card {
-  width: 100%;
-  max-width: 520px;
-  background: white;
-  border-radius: 24px;
-  overflow: hidden;
-  box-shadow:
-    0 20px 60px rgba(0,0,0,0.25);
-}
+.main-circle {
 
-.dashboard-header {
-  background: #f1f5f9;
-  padding: 15px;
-  display: flex;
-  gap: 10px;
-}
+  width: 420px;
+  height: 420px;
 
-.circle {
-  width: 14px;
-  height: 14px;
+  background:
+    linear-gradient(
+      135deg,
+      #7c3aed,
+      #dc2626
+    );
+
   border-radius: 50%;
+
+  box-shadow:
+    0 30px 60px rgba(124, 58, 237, 0.3);
+
 }
 
-.red {
-  background: #ef4444;
-}
+.floating-card {
 
-.yellow {
-  background: #f59e0b;
-}
-
-.green {
-  background: #10b981;
-}
-
-.dashboard-body {
-  padding: 30px;
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-}
-
-.stat-card {
-  background: #f8fafc;
+  position: absolute;
+  background: white;
+  padding: 22px;
   border-radius: 18px;
-  padding: 25px;
-  text-align: center;
+  min-width: 200px;
+  box-shadow:
+    0 15px 40px rgba(0,0,0,0.08);
+
 }
 
-.stat-card h3 {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #2563eb;
+.floating-card h3 {
+
+  margin: 0;
+  font-size: 32px;
+
 }
 
-.stat-card p {
-  margin-top: 10px;
-  color: #475569;
-  font-size: 0.95rem;
+.floating-card p {
+
+  margin-top: 8px;
+  color: #64748b;
+
+}
+
+.purple-card {
+
+  top: 80px;
+  left: 0;
+
+}
+
+.purple-card h3 {
+
+  color: #7c3aed;
+
+}
+
+.red-card {
+
+  bottom: 60px;
+  right: 0;
+
+}
+
+.red-card h3 {
+
+  color: #dc2626;
+
 }
 
 /* =========================
@@ -533,163 +427,144 @@ export default {
 ========================= */
 
 .features-section {
-  padding: 100px 0;
+
+  padding: 100px 8%;
+  background: white;
+
+}
+
+.section-header {
+
+  text-align: center;
+  margin-bottom: 60px;
+
+}
+
+.section-header h2 {
+
+  font-size: 42px;
+  color: #1e1b4b;
+  margin-bottom: 14px;
+
+}
+
+.section-header p {
+
+  color: #64748b;
+  font-size: 17px;
+
+}
+
+.feature-grid {
+
+  display: grid;
+  grid-template-columns:
+    repeat(auto-fit, minmax(260px, 1fr));
+
+  gap: 28px;
+
 }
 
 .feature-card {
+
   background: white;
-  border-radius: 22px;
-  padding: 35px 28px;
-  height: 100%;
-  transition: 0.3s ease;
+  border-radius: 24px;
+  padding: 32px;
+  border: 1px solid #f1f5f9;
+  transition: 0.3s;
+
   box-shadow:
-    0 10px 30px rgba(0,0,0,0.05);
+    0 10px 30px rgba(0,0,0,0.04);
+
 }
 
 .feature-card:hover {
+
   transform: translateY(-8px);
+
 }
 
-.feature-icon {
+.icon {
+
   width: 70px;
   height: 70px;
-  border-radius: 18px;
-  background: #dbeafe;
-  color: #2563eb;
+  border-radius: 20px;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.8rem;
-  margin-bottom: 20px;
+
+  font-size: 30px;
+  margin-bottom: 24px;
+
 }
 
-.feature-card h4 {
-  font-weight: 700;
-  margin-bottom: 15px;
+.purple-bg {
+
+  background: rgba(124, 58, 237, 0.12);
+
+}
+
+.red-bg {
+
+  background: rgba(220, 38, 38, 0.12);
+
+}
+
+.feature-card h3 {
+
+  margin-bottom: 14px;
+  color: #1e1b4b;
+
 }
 
 .feature-card p {
-  color: #64748b;
-  line-height: 1.7;
-}
 
-/* =========================
-   WORKFLOW
-========================= */
-
-.workflow-section {
-  padding: 100px 0;
-  background: white;
-}
-
-.workflow-card {
-  text-align: center;
-  padding: 30px 20px;
-}
-
-.step-number {
-  width: 70px;
-  height: 70px;
-  background: #2563eb;
-  color: white;
-  font-size: 1.6rem;
-  font-weight: 700;
-  border-radius: 50%;
-  margin: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 20px;
-}
-
-.workflow-card h5 {
-  font-weight: 700;
-  margin-bottom: 15px;
-}
-
-.workflow-card p {
-  color: #64748b;
-  line-height: 1.7;
-}
-
-/* =========================
-   BENEFITS
-========================= */
-
-.benefits-section {
-  padding: 100px 0;
-}
-
-.benefits-content h2 {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: #0f172a;
-}
-
-.benefit-intro {
-  margin-top: 20px;
-  color: #64748b;
   line-height: 1.8;
-}
-
-.benefit-list {
-  margin-top: 30px;
-}
-
-.benefit-item {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  margin-bottom: 18px;
-}
-
-.benefit-item i {
-  color: #10b981;
-  font-size: 1.2rem;
-}
-
-.benefit-item span {
-  color: #334155;
-  font-weight: 500;
-}
-
-.benefit-image {
-  position: relative;
-  height: 420px;
-}
-
-.floating-card {
-  position: absolute;
-  background: white;
-  padding: 28px;
-  border-radius: 20px;
-  width: 260px;
-  box-shadow:
-    0 15px 40px rgba(0,0,0,0.08);
-}
-
-.floating-card h4 {
-  font-weight: 700;
-}
-
-.floating-card p {
-  margin-top: 10px;
   color: #64748b;
+
 }
 
-.top-card {
-  top: 0;
-  left: 40px;
+/* =========================
+   STATS
+========================= */
+
+.stats-section {
+
+  padding: 60px 8%;
+  display: grid;
+
+  grid-template-columns:
+    repeat(auto-fit, minmax(220px, 1fr));
+
+  gap: 24px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #7c3aed,
+      #dc2626
+    );
+
 }
 
-.middle-card {
-  top: 140px;
-  right: 0;
+.stats-card {
+
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(10px);
+
+  border-radius: 22px;
+  padding: 32px;
+  text-align: center;
+  color: white;
+
 }
 
-.bottom-card {
-  bottom: 0;
-  left: 80px;
+.stats-card h2 {
+
+  font-size: 42px;
+  margin-bottom: 10px;
+
 }
 
 /* =========================
@@ -697,94 +572,104 @@ export default {
 ========================= */
 
 .cta-section {
-  padding: 100px 0;
+
+  padding: 100px 8%;
+  text-align: center;
+  background: #fff7fb;
+
 }
 
-.cta-card {
+.cta-content h2 {
+
+  font-size: 48px;
+  margin-bottom: 18px;
+  color: #1e1b4b;
+
+}
+
+.cta-content p {
+
+  color: #64748b;
+  font-size: 18px;
+  margin-bottom: 36px;
+
+}
+
+.cta-btn {
+
   background:
     linear-gradient(
       135deg,
-      #2563eb,
-      #1d4ed8
+      #7c3aed,
+      #dc2626
     );
-  padding: 70px 40px;
-  border-radius: 28px;
+
   color: white;
-}
+  display: inline-block;
 
-.cta-card h2 {
-  font-size: 2.7rem;
-  font-weight: 700;
-}
-
-.cta-card p {
-  margin-top: 20px;
-  color: #dbeafe;
-  font-size: 1.1rem;
-}
-
-.cta-card .btn {
-  padding: 14px 30px;
-  border-radius: 12px;
-  font-weight: 600;
 }
 
 /* =========================
    RESPONSIVE
 ========================= */
 
-@media (max-width: 991px) {
+@media (max-width: 992px) {
 
-  .hero-title {
-    font-size: 2.7rem;
-  }
+  .hero-section {
 
-  .benefit-image {
-    margin-top: 50px;
-    height: auto;
-    display: flex;
     flex-direction: column;
-    gap: 20px;
+    text-align: center;
+    padding-top: 120px;
+
   }
 
-  .floating-card {
-    position: static;
-    width: 100%;
+  .hero-buttons {
+
+    justify-content: center;
+
+  }
+
+  .hero-content h1 {
+
+    font-size: 48px;
+
   }
 
 }
 
 @media (max-width: 768px) {
 
-  .hero-section {
-    text-align: center;
-  }
+  .hero-content h1 {
 
-  .hero-description {
-    margin-left: auto;
-    margin-right: auto;
-  }
+    font-size: 38px;
 
-  .hero-buttons {
-    justify-content: center;
-  }
-
-  .hero-title {
-    font-size: 2.2rem;
   }
 
   .section-header h2,
-  .benefits-content h2,
-  .cta-card h2 {
-    font-size: 2rem;
+  .cta-content h2 {
+
+    font-size: 32px;
+
   }
 
-  .stats-grid {
-    grid-template-columns: 1fr;
+  .main-circle {
+
+    width: 300px;
+    height: 300px;
+
   }
 
-  .cta-card {
-    padding: 50px 25px;
+  .floating-card {
+
+    position: static;
+    margin: 12px;
+
+  }
+
+  .hero-image {
+
+    flex-direction: column;
+
   }
 
 }

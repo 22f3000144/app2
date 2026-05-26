@@ -1,344 +1,232 @@
 <template>
-  <div class="shortlisted-page">
+  <div class="shortlisted-students-page">
 
-    <div class="container py-5">
+    <!-- Header -->
+    <div class="page-header">
 
-      <!-- PAGE HEADER -->
+      <div>
 
-      <div class="page-header mb-4">
+        <h2>Shortlisted Students</h2>
 
-        <div>
+        <p>
+          View shortlisted and selected candidates
+        </p>
 
-          <h2>
-            Shortlisted Students
-          </h2>
+      </div>
+
+      <router-link
+        to="/company/dashboard"
+        class="back-btn"
+      >
+        ← Dashboard
+      </router-link>
+
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-section">
+
+      <!-- Search -->
+      <input
+        type="text"
+        v-model="search"
+        placeholder="Search students..."
+      />
+
+      <!-- Status -->
+      <select v-model="statusFilter">
+
+        <option value="">
+          All Status
+        </option>
+
+        <option value="Shortlisted">
+          Shortlisted
+        </option>
+
+        <option value="Selected">
+          Selected
+        </option>
+
+      </select>
+
+      <!-- Drive -->
+      <select v-model="driveFilter">
+
+        <option value="">
+          All Drives
+        </option>
+
+        <option
+          v-for="drive in uniqueDrives"
+          :key="drive"
+          :value="drive"
+        >
+          {{ drive }}
+        </option>
+
+      </select>
+
+    </div>
+
+    <!-- Loading -->
+    <div
+      v-if="loading"
+      class="loading-box"
+    >
+      Loading students...
+    </div>
+
+    <!-- Empty -->
+    <div
+      v-else-if="filteredStudents.length === 0"
+      class="empty-box"
+    >
+      No shortlisted students found.
+    </div>
+
+    <!-- Students -->
+    <div
+      v-else
+      class="students-grid"
+    >
+
+      <div
+        v-for="student in filteredStudents"
+        :key="student.application_id"
+        class="student-card"
+      >
+
+        <!-- Top -->
+        <div class="student-top">
+
+          <div>
+
+            <h3>
+              {{ student.student_name }}
+            </h3>
+
+            <p>
+              {{ student.student_email }}
+            </p>
+
+          </div>
+
+          <span
+            class="status-badge"
+            :class="student.status.toLowerCase()"
+          >
+            {{ student.status }}
+          </span>
+
+        </div>
+
+        <!-- Job -->
+        <div class="job-box">
+
+          <label>
+            Applied For
+          </label>
+
+          <h4>
+            {{ student.job_title }}
+          </h4>
+
+        </div>
+
+        <!-- Details -->
+        <div class="details-grid">
+
+          <div class="detail-item">
+
+            <label>Branch</label>
+
+            <span>
+              {{ student.branch }}
+            </span>
+
+          </div>
+
+          <div class="detail-item">
+
+            <label>CGPA</label>
+
+            <span>
+              {{ student.cgpa }}
+            </span>
+
+          </div>
+
+          <div class="detail-item">
+
+            <label>Year</label>
+
+            <span>
+              {{ student.year }}
+            </span>
+
+          </div>
+
+          <div class="detail-item">
+
+            <label>Phone</label>
+
+            <span>
+              {{ student.phone }}
+            </span>
+
+          </div>
+
+        </div>
+
+        <!-- Skills -->
+        <div class="skills-box">
+
+          <label>
+            Skills
+          </label>
 
           <p>
-            View shortlisted and selected candidates for your placement drives.
+            {{
+              student.skills ||
+              "No skills added"
+            }}
           </p>
 
         </div>
 
-        <router-link
-          to="/company/dashboard"
-          class="btn btn-outline-primary"
+        <!-- Interview -->
+        <div
+          v-if="student.interview_date"
+          class="interview-box"
         >
 
-          <i class="bi bi-arrow-left me-2"></i>
+          <strong>
+            Interview:
+          </strong>
 
-          Back Dashboard
-
-        </router-link>
-
-      </div>
-
-      <!-- ALERT -->
-
-      <div
-        v-if="message"
-        class="alert"
-        :class="success ? 'alert-success' : 'alert-danger'"
-      >
-        {{ message }}
-      </div>
-
-      <!-- FILTER SECTION -->
-
-      <div class="filter-card mb-4">
-
-        <div class="row g-3 align-items-end">
-
-          <!-- DRIVE -->
-
-          <div class="col-lg-4">
-
-            <label class="form-label">
-              Placement Drive
-            </label>
-
-            <select
-              class="form-select"
-              v-model="selectedDrive"
-              @change="fetchStudents"
-            >
-
-              <option value="">
-                All Drives
-              </option>
-
-              <option
-                v-for="drive in drives"
-                :key="drive.id"
-                :value="drive.id"
-              >
-                {{ drive.job_title }}
-              </option>
-
-            </select>
-
-          </div>
-
-          <!-- STATUS -->
-
-          <div class="col-lg-4">
-
-            <label class="form-label">
-              Application Status
-            </label>
-
-            <select
-              class="form-select"
-              v-model="selectedStatus"
-              @change="fetchStudents"
-            >
-
-              <option value="">
-                All Status
-              </option>
-
-              <option value="Shortlisted">
-                Shortlisted
-              </option>
-
-              <option value="Selected">
-                Selected
-              </option>
-
-            </select>
-
-          </div>
-
-          <!-- SEARCH -->
-
-          <div class="col-lg-4">
-
-            <label class="form-label">
-              Search Student
-            </label>
-
-            <input
-              type="text"
-              class="form-control"
-              placeholder="Search by name or email"
-              v-model="search"
-            />
-
-          </div>
+          {{ formatDateTime(student.interview_date) }}
 
         </div>
 
-      </div>
-
-      <!-- LOADING -->
-
-      <div
-        v-if="loading"
-        class="loading-section"
-      >
-
-        <div class="spinner-border text-primary"></div>
-
-        <p class="mt-3">
-          Loading shortlisted students...
-        </p>
-
-      </div>
-
-      <!-- EMPTY -->
-
-      <div
-        v-else-if="filteredStudents.length === 0"
-        class="empty-card"
-      >
-
-        <i class="bi bi-people"></i>
-
-        <h4>
-          No Students Found
-        </h4>
-
-        <p>
-          No shortlisted or selected students available.
-        </p>
-
-      </div>
-
-      <!-- STUDENTS -->
-
-      <div
-        v-else
-        class="row g-4"
-      >
-
-        <div
-          class="col-lg-6"
-          v-for="student in filteredStudents"
-          :key="student.application_id"
-        >
-
-          <div class="student-card">
-
-            <!-- TOP -->
-
-            <div class="card-top">
-
-              <div class="student-info">
-
-                <div class="avatar">
-
-                  {{ student.student_name.charAt(0) }}
-
-                </div>
-
-                <div>
-
-                  <h4>
-                    {{ student.student_name }}
-                  </h4>
-
-                  <p>
-                    {{ student.student_email }}
-                  </p>
-
-                </div>
-
-              </div>
-
-              <span
-                class="status-badge"
-                :class="student.status === 'Selected'
-                  ? 'selected'
-                  : 'shortlisted'
-                "
-              >
-
-                {{ student.status }}
-
-              </span>
-
-            </div>
-
-            <!-- DRIVE -->
-
-            <div class="drive-box">
-
-              <i class="bi bi-briefcase-fill me-2"></i>
-
-              {{ student.job_title }}
-
-            </div>
-
-            <!-- DETAILS -->
-
-            <div class="details-grid">
-
-              <div class="detail-item">
-
-                <span class="label">
-                  Branch
-                </span>
-
-                <span class="value">
-                  {{ student.branch }}
-                </span>
-
-              </div>
-
-              <div class="detail-item">
-
-                <span class="label">
-                  CGPA
-                </span>
-
-                <span class="value">
-                  {{ student.cgpa }}
-                </span>
-
-              </div>
-
-              <div class="detail-item">
-
-                <span class="label">
-                  Passing Year
-                </span>
-
-                <span class="value">
-                  {{ student.year }}
-                </span>
-
-              </div>
-
-              <div class="detail-item">
-
-                <span class="label">
-                  Applied On
-                </span>
-
-                <span class="value">
-                  {{ formatDate(student.application_date) }}
-                </span>
-
-              </div>
-
-            </div>
-
-            <!-- INTERVIEW -->
-
-            <div
-              v-if="student.interview_date"
-              class="interview-box"
-            >
-
-              <i class="bi bi-calendar-event me-2"></i>
-
-              Interview :
-              {{ formatDateTime(student.interview_date) }}
-
-            </div>
-
-            <!-- ACTIONS -->
-
-            <div class="action-section">
-
-              <button
-                class="btn btn-outline-success"
-                @click="markSelected(student)"
-                v-if="student.status !== 'Selected'"
-              >
-
-                <i class="bi bi-check-circle me-2"></i>
-
-                Mark Selected
-
-              </button>
-
-              <button
-                class="btn btn-outline-danger"
-                @click="markRejected(student)"
-              >
-
-                <i class="bi bi-x-circle me-2"></i>
-
-                Reject
-
-              </button>
-
-              <a
-                v-if="student.resume"
-                :href="student.resume"
-                target="_blank"
-                class="btn btn-outline-primary"
-              >
-
-                <i class="bi bi-file-earmark-arrow-down me-2"></i>
-
-                Resume
-
-              </a>
-
-            </div>
-
-          </div>
+        <!-- Resume -->
+        <div class="resume-section">
+
+          <a
+            v-if="student.resume"
+            :href="student.resume"
+            target="_blank"
+            class="resume-btn"
+          >
+            View Resume
+          </a>
+
+          <span
+            v-else
+            class="no-resume"
+          >
+            Resume Not Uploaded
+          </span>
 
         </div>
 
@@ -350,7 +238,7 @@
 </template>
 
 <script>
-import axios from "axios"
+import axios from "axios";
 
 export default {
 
@@ -360,23 +248,17 @@ export default {
 
     return {
 
-      loading: false,
-
-      success: false,
-
-      message: "",
+      loading: true,
 
       students: [],
 
-      drives: [],
+      search: "",
 
-      selectedDrive: "",
+      statusFilter: "",
 
-      selectedStatus: "",
+      driveFilter: ""
 
-      search: ""
-
-    }
+    };
 
   },
 
@@ -384,23 +266,76 @@ export default {
 
     filteredStudents() {
 
-      return this.students.filter(student => {
+      return this.students.filter(
+        (student) => {
 
-        const matchesSearch =
+          const keyword =
+            this.search.toLowerCase();
 
-          student.student_name
-            .toLowerCase()
-            .includes(this.search.toLowerCase())
+          const matchesSearch =
 
-          ||
+            student.student_name
+              .toLowerCase()
+              .includes(keyword)
 
-          student.student_email
-            .toLowerCase()
-            .includes(this.search.toLowerCase())
+            ||
 
-        return matchesSearch
+            student.student_email
+              .toLowerCase()
+              .includes(keyword)
 
-      })
+            ||
+
+            student.branch
+              .toLowerCase()
+              .includes(keyword)
+
+            ||
+
+            (student.skills || "")
+              .toLowerCase()
+              .includes(keyword);
+
+          const matchesStatus =
+
+            !this.statusFilter ||
+
+            student.status ===
+            this.statusFilter;
+
+          const matchesDrive =
+
+            !this.driveFilter ||
+
+            student.job_title ===
+            this.driveFilter;
+
+          return (
+
+            matchesSearch &&
+            matchesStatus &&
+            matchesDrive
+
+          );
+
+        }
+      );
+
+    },
+
+    uniqueDrives() {
+
+      return [
+
+        ...new Set(
+
+          this.students.map(
+            student => student.job_title
+          )
+
+        )
+
+      ];
 
     }
 
@@ -408,45 +343,24 @@ export default {
 
   mounted() {
 
-    this.fetchDrives()
-
-    this.fetchStudents()
+    this.fetchStudents();
 
   },
 
   methods: {
 
-    async fetchDrives() {
+    getHeaders() {
 
-      try {
+      return {
 
-        const token = localStorage.getItem("token")
+        headers: {
 
-        const response = await axios.get(
+          Authorization:
+            `Bearer ${localStorage.getItem("token")}`
 
-          "http://127.0.0.1:5000/api/company/drives",
+        }
 
-          {
-
-            headers: {
-
-              Authorization: `Bearer ${token}`
-
-            }
-
-          }
-
-        )
-
-        this.drives = response.data
-
-      }
-
-      catch (error) {
-
-        console.log(error)
-
-      }
+      };
 
     },
 
@@ -454,194 +368,70 @@ export default {
 
       try {
 
-        this.loading = true
-
-        const token = localStorage.getItem("token")
-
-        let url =
-          "http://127.0.0.1:5000/api/company/shortlisted-students"
-
-        const params = {}
-
-        if (this.selectedDrive) {
-
-          params.drive_id = this.selectedDrive
-
-        }
-
-        if (this.selectedStatus) {
-
-          params.status = this.selectedStatus
-
-        }
-
         const response = await axios.get(
 
-          url,
+          "http://127.0.0.1:5000/api/company/shortlisted-students",
 
-          {
+          this.getHeaders()
 
-            params,
+        );
 
-            headers: {
-
-              Authorization: `Bearer ${token}`
-
-            }
-
-          }
-
-        )
-
-        this.students = response.data
+        this.students =
+          response.data;
 
       }
 
       catch (error) {
 
-        this.message =
+        console.error(error);
+
+        alert(
+
           error.response?.data?.message ||
-          "Failed to load students."
+
+          "Failed to load shortlisted students."
+
+        );
 
       }
 
       finally {
 
-        this.loading = false
+        this.loading = false;
 
       }
-
-    },
-
-    async markSelected(student) {
-
-      try {
-
-        const token = localStorage.getItem("token")
-
-        const response = await axios.put(
-
-          `http://127.0.0.1:5000/api/company/application/update-status/${student.application_id}`,
-
-          {
-
-            status: "Selected"
-
-          },
-
-          {
-
-            headers: {
-
-              Authorization: `Bearer ${token}`
-
-            }
-
-          }
-
-        )
-
-        student.status = "Selected"
-
-        this.success = true
-
-        this.message = response.data.message
-
-      }
-
-      catch (error) {
-
-        this.success = false
-
-        this.message =
-          error.response?.data?.message ||
-          "Failed to update status."
-
-      }
-
-    },
-
-    async markRejected(student) {
-
-      try {
-
-        const token = localStorage.getItem("token")
-
-        const response = await axios.put(
-
-          `http://127.0.0.1:5000/api/company/application/update-status/${student.application_id}`,
-
-          {
-
-            status: "Rejected"
-
-          },
-
-          {
-
-            headers: {
-
-              Authorization: `Bearer ${token}`
-
-            }
-
-          }
-
-        )
-
-        this.students =
-          this.students.filter(
-
-            item =>
-              item.application_id !==
-              student.application_id
-
-          )
-
-        this.success = true
-
-        this.message = response.data.message
-
-      }
-
-      catch (error) {
-
-        this.success = false
-
-        this.message =
-          error.response?.data?.message ||
-          "Failed to reject student."
-
-      }
-
-    },
-
-    formatDate(date) {
-
-      return new Date(date).toLocaleDateString()
 
     },
 
     formatDateTime(date) {
 
-      return new Date(date).toLocaleString()
+      if (!date) return "-";
+
+      return new Date(date)
+        .toLocaleString();
 
     }
 
   }
 
-}
+};
 </script>
 
 <style scoped>
 
-/* =========================
-   PAGE
-========================= */
+.shortlisted-students-page {
 
-.shortlisted-page {
   min-height: 100vh;
-  background: #f5f7fb;
+
+  padding: 30px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #fff5f8,
+      #f5f3ff
+    );
+
 }
 
 /* =========================
@@ -649,133 +439,251 @@ export default {
 ========================= */
 
 .page-header {
+
   display: flex;
   justify-content: space-between;
   align-items: center;
+
   gap: 20px;
   flex-wrap: wrap;
+
+  margin-bottom: 30px;
+
 }
 
 .page-header h2 {
-  font-size: 2.3rem;
-  font-weight: 700;
-  color: #0f172a;
+
+  margin: 0;
+
+  font-size: 34px;
+
+  color: #312e81;
+
 }
 
 .page-header p {
+
+  margin-top: 8px;
+
   color: #64748b;
-  margin-top: 10px;
+
+}
+
+.back-btn {
+
+  text-decoration: none;
+
+  background:
+    linear-gradient(
+      135deg,
+      #7c3aed,
+      #dc2626
+    );
+
+  color: white;
+
+  padding: 14px 22px;
+
+  border-radius: 14px;
+
+  font-weight: 700;
+
 }
 
 /* =========================
-   FILTER
+   FILTERS
 ========================= */
 
-.filter-card {
+.filters-section {
+
+  display: flex;
+
+  gap: 16px;
+
+  flex-wrap: wrap;
+
+  margin-bottom: 30px;
+
+}
+
+.filters-section input,
+.filters-section select {
+
+  flex: 1;
+
+  min-width: 220px;
+
+  padding: 14px 16px;
+
+  border-radius: 14px;
+
+  border: 1px solid #dbeafe;
+
   background: white;
-  border-radius: 22px;
-  padding: 25px;
+
+  outline: none;
+
+}
+
+.filters-section input:focus,
+.filters-section select:focus {
+
+  border-color: #7c3aed;
+
   box-shadow:
-    0 8px 24px rgba(0,0,0,0.05);
-}
+    0 0 0 4px rgba(124,58,237,0.08);
 
-.form-label {
-  font-weight: 600;
-  margin-bottom: 10px;
-}
-
-.form-select,
-.form-control {
-  min-height: 50px;
-  border-radius: 12px;
 }
 
 /* =========================
-   STUDENT CARD
+   STATES
 ========================= */
+
+.loading-box,
+.empty-box {
+
+  background: white;
+
+  padding: 50px;
+
+  border-radius: 24px;
+
+  text-align: center;
+
+  font-weight: 700;
+
+}
+
+/* =========================
+   GRID
+========================= */
+
+.students-grid {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(auto-fit, minmax(370px, 1fr));
+
+  gap: 24px;
+
+}
 
 .student-card {
+
   background: white;
+
   border-radius: 24px;
-  padding: 28px;
+
+  padding: 24px;
+
   box-shadow:
-    0 8px 24px rgba(0,0,0,0.05);
-  height: 100%;
+    0 15px 40px rgba(0,0,0,0.05);
+
+  transition: 0.3s;
+
+}
+
+.student-card:hover {
+
+  transform: translateY(-5px);
+
 }
 
 /* =========================
    TOP
 ========================= */
 
-.card-top {
+.student-top {
+
   display: flex;
   justify-content: space-between;
-  gap: 15px;
+  align-items: flex-start;
+
+  gap: 16px;
+
   margin-bottom: 22px;
+
 }
 
-.student-info {
-  display: flex;
-  gap: 15px;
-}
+.student-top h3 {
 
-.avatar {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: #2563eb;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 1.4rem;
-}
-
-.student-info h4 {
-  font-weight: 700;
-  margin-bottom: 5px;
-}
-
-.student-info p {
-  color: #64748b;
   margin: 0;
-  word-break: break-word;
+
+  color: #1e1b4b;
+
 }
 
-/* =========================
-   STATUS
-========================= */
+.student-top p {
+
+  margin-top: 6px;
+
+  color: #64748b;
+
+}
 
 .status-badge {
+
   padding: 8px 14px;
+
   border-radius: 50px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  height: fit-content;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+
 }
 
-.shortlisted {
+.status-badge.shortlisted {
+
   background: #fef3c7;
-  color: #b45309;
+  color: #d97706;
+
 }
 
-.selected {
+.status-badge.selected {
+
   background: #dcfce7;
-  color: #15803d;
+  color: #16a34a;
+
 }
 
 /* =========================
-   DRIVE
+   JOB
 ========================= */
 
-.drive-box {
-  background: #eff6ff;
-  color: #1d4ed8;
-  padding: 14px 16px;
-  border-radius: 14px;
-  font-weight: 600;
+.job-box {
+
+  background:
+    rgba(124,58,237,0.08);
+
+  padding: 16px;
+
+  border-radius: 16px;
+
   margin-bottom: 22px;
+
+}
+
+.job-box label {
+
+  display: block;
+
+  font-size: 13px;
+
+  color: #7c3aed;
+
+  margin-bottom: 8px;
+
+}
+
+.job-box h4 {
+
+  margin: 0;
+
+  color: #312e81;
+
 }
 
 /* =========================
@@ -783,27 +691,68 @@ export default {
 ========================= */
 
 .details-grid {
+
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
+
+  grid-template-columns:
+    repeat(2, 1fr);
+
+  gap: 18px;
+
+  margin-bottom: 20px;
+
 }
 
-.detail-item {
-  background: #f8fafc;
-  border-radius: 14px;
-  padding: 16px;
-}
+.detail-item label {
 
-.label {
   display: block;
+
+  font-size: 13px;
+
   color: #64748b;
-  font-size: 0.8rem;
-  margin-bottom: 8px;
+
+  margin-bottom: 6px;
+
 }
 
-.value {
-  font-weight: 600;
-  color: #0f172a;
+.detail-item span {
+
+  font-weight: 700;
+
+  color: #334155;
+
+}
+
+/* =========================
+   SKILLS
+========================= */
+
+.skills-box {
+
+  margin-bottom: 20px;
+
+}
+
+.skills-box label {
+
+  display: block;
+
+  font-size: 13px;
+
+  color: #64748b;
+
+  margin-bottom: 8px;
+
+}
+
+.skills-box p {
+
+  margin: 0;
+
+  line-height: 1.7;
+
+  color: #475569;
+
 }
 
 /* =========================
@@ -811,74 +760,59 @@ export default {
 ========================= */
 
 .interview-box {
-  margin-top: 22px;
-  background: #f8fafc;
+
+  background:
+    rgba(220,38,38,0.08);
+
+  color: #b91c1c;
+
+  padding: 14px;
+
   border-radius: 14px;
-  padding: 15px 16px;
-  color: #1e293b;
-  font-weight: 500;
-}
 
-/* =========================
-   ACTIONS
-========================= */
+  margin-bottom: 20px;
 
-.action-section {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-top: 24px;
-}
-
-.btn {
-  border-radius: 12px;
   font-weight: 600;
+
 }
 
 /* =========================
-   EMPTY
+   RESUME
 ========================= */
 
-.empty-card {
-  background: white;
-  border-radius: 24px;
-  padding: 70px 30px;
-  text-align: center;
-  box-shadow:
-    0 8px 24px rgba(0,0,0,0.05);
-}
+.resume-section {
 
-.empty-card i {
-  font-size: 4rem;
-  color: #94a3b8;
-}
-
-.empty-card h4 {
-  margin-top: 20px;
-  font-weight: 700;
-}
-
-.empty-card p {
-  color: #64748b;
   margin-top: 10px;
+
 }
 
-/* =========================
-   LOADING
-========================= */
+.resume-btn {
 
-.loading-section {
-  text-align: center;
-  padding: 80px 20px;
+  display: inline-block;
+
+  text-decoration: none;
+
+  background:
+    linear-gradient(
+      135deg,
+      #7c3aed,
+      #dc2626
+    );
+
+  color: white;
+
+  padding: 12px 18px;
+
+  border-radius: 12px;
+
+  font-weight: 700;
+
 }
 
-/* =========================
-   ALERT
-========================= */
+.no-resume {
 
-.alert {
-  border-radius: 14px;
-  padding: 15px 18px;
+  color: #94a3b8;
+
 }
 
 /* =========================
@@ -887,24 +821,29 @@ export default {
 
 @media (max-width: 768px) {
 
-  .details-grid {
-    grid-template-columns: 1fr;
+  .shortlisted-students-page {
+
+    padding: 18px;
+
   }
 
-  .card-top {
+  .page-header {
+
     flex-direction: column;
-  }
+    align-items: flex-start;
 
-  .action-section {
-    flex-direction: column;
-  }
-
-  .action-section .btn {
-    width: 100%;
   }
 
   .page-header h2 {
-    font-size: 1.9rem;
+
+    font-size: 28px;
+
+  }
+
+  .details-grid {
+
+    grid-template-columns: 1fr;
+
   }
 
 }

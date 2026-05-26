@@ -67,7 +67,6 @@
               :key="company.id"
             >
 
-
               <td>
                 <div class="company-info">
 
@@ -87,7 +86,7 @@
               </td>
 
               <td>
-                {{ company.hr_contact}}
+                {{ company.hr_contact }}
               </td>
 
               <td>
@@ -104,43 +103,71 @@
                 </a>
               </td>
 
-            <td>
+              <!-- Status -->
+              <td>
 
-            <span
-                class="status-badge"
-                :class="company.approved ? 'approved' : 'pending'"
-            >
+                <span
+                  v-if="!company.active"
+                  class="status-badge deactivated"
+                >
+                  Deactivated
+                </span>
 
-                {{ company.approved ? 'Approved' : 'Pending' }}
+                <span
+                  v-else-if="company.approved"
+                  class="status-badge approved"
+                >
+                  Approved
+                </span>
 
-            </span>
+                <span
+                  v-else
+                  class="status-badge pending"
+                >
+                  Pending
+                </span>
 
-            </td>
+              </td>
 
+              <!-- Actions -->
               <td>
 
                 <div class="action-buttons">
 
+                  <!-- Approve -->
                   <button
+                    v-if="!company.approved && company.active"
                     class="approve-btn"
                     @click="approveCompany(company.id)"
                   >
                     Approve
                   </button>
 
+                  <!-- Reject -->
                   <button
+                    v-if="company.approved && company.active"
                     class="reject-btn"
                     @click="rejectCompany(company.id)"
                   >
                     Reject
                   </button>
 
+                  <!-- Deactivate -->
                   <button
+                    v-if="company.active"
                     class="delete-btn"
                     @click="deleteCompany(company.id)"
                   >
-                    Delete
+                    Deactivate
                   </button>
+
+                  <!-- Already Deactivated -->
+                  <span
+                    v-if="!company.active"
+                    class="deactivated-text"
+                  >
+                    Company Disabled
+                  </span>
 
                 </div>
 
@@ -276,7 +303,7 @@ const rejectCompany = async (companyId) => {
 const deleteCompany = async (companyId) => {
 
   const confirmDelete = confirm(
-    'Are you sure you want to delete this company?'
+    'Are you sure you want to deactivate this company?'
   )
 
   if (!confirmDelete) return
@@ -295,7 +322,7 @@ const deleteCompany = async (companyId) => {
       }
     )
 
-    alert('Company Deleted and Deactivated')
+    alert('Company Deactivated')
 
     fetchCompanies()
 
@@ -303,7 +330,7 @@ const deleteCompany = async (companyId) => {
 
     console.log(error)
 
-    alert('Delete Failed')
+    alert('Deactivate Failed')
   }
 }
 </script>
@@ -437,7 +464,7 @@ const deleteCompany = async (companyId) => {
   color: #166534;
 }
 
-.rejected {
+.deactivated {
   background: #fee2e2;
   color: #991b1b;
 }
@@ -482,6 +509,12 @@ const deleteCompany = async (companyId) => {
 .reject-btn:hover,
 .delete-btn:hover {
   transform: translateY(-2px);
+}
+
+.deactivated-text {
+  color: #dc2626;
+  font-weight: 700;
+  font-size: 14px;
 }
 
 /* Empty */

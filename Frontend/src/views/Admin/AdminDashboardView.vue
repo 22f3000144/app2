@@ -10,7 +10,13 @@
         <div class="brand">
 
           <div class="brand-logo">
-            E
+                <img
+      alt="App logo"
+      class="logo"
+      src="@/assets/logo.png"
+      width="50"
+      height="50"
+    />
           </div>
 
           <div>

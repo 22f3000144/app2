@@ -6,23 +6,29 @@
 
       <div>
         <h2>Manage Placement Drives</h2>
+
         <p>
           Approve, reject and manage placement drives
         </p>
       </div>
 
       <div class="search-box">
+
         <input
           type="text"
           placeholder="Search drives..."
           v-model="search"
         />
+
       </div>
 
     </div>
 
     <!-- Loading -->
-    <div v-if="loading" class="loading-box">
+    <div
+      v-if="loading"
+      class="loading-box"
+    >
       Loading Placement Drives...
     </div>
 
@@ -45,7 +51,7 @@
 
       </div>
 
-      <!-- Drives -->
+      <!-- Drives Table -->
       <div
         v-else
         class="table-responsive drives-table-wrapper"
@@ -54,17 +60,31 @@
         <table class="table drives-table">
 
           <thead>
+
             <tr>
+
               <th>ID</th>
+
               <th>Company</th>
+
               <th>Job Title</th>
+
               <th>Branch</th>
+
               <th>CGPA</th>
+
+              <th>Year</th>
+
               <th>Deadline</th>
+
               <th>Status</th>
+
               <th>Applications</th>
+
               <th>Actions</th>
+
             </tr>
+
           </thead>
 
           <tbody>
@@ -74,7 +94,10 @@
               :key="drive.id"
             >
 
-              <td>{{ drive.id }}</td>
+              <!-- ID -->
+              <td>
+                {{ drive.id }}
+              </td>
 
               <!-- Company -->
               <td>
@@ -82,12 +105,20 @@
                 <div class="company-info">
 
                   <div class="company-logo">
-                    {{ drive.company_name?.charAt(0) }}
+
+                    {{
+                      drive.company_name
+                        ? drive.company_name.charAt(0)
+                        : "C"
+                    }}
+
                   </div>
 
                   <div>
 
-                    <h6>{{ drive.company_name }}</h6>
+                    <h6>
+                      {{ drive.company_name || "Unknown Company" }}
+                    </h6>
 
                     <small>
                       Registered Company
@@ -99,28 +130,48 @@
 
               </td>
 
-              <!-- Job Title -->
+              <!-- Job -->
               <td>
 
                 <div class="job-info">
 
-                  <h6>{{ drive.job_title }}</h6>
+                  <h6>
+                    {{ drive.job_title }}
+                  </h6>
 
                   <small>
-                    {{ drive.job_description }}
+
+                    {{
+                      drive.job_description?.length > 80
+                        ? drive.job_description.slice(0, 80) + "..."
+                        : drive.job_description
+                    }}
+
                   </small>
 
                 </div>
 
               </td>
 
-              <!-- Eligibility -->
-              <td>{{ drive.branch }}</td>
+              <!-- Branch -->
+              <td>
+                {{ drive.eligible_branch }}
+              </td>
 
-              <td>{{ drive.cgpa }}</td>
+              <!-- CGPA -->
+              <td>
+                {{ drive.min_cgpa }}
+              </td>
+
+              <!-- Year -->
+              <td>
+                {{ drive.eligible_year }}
+              </td>
 
               <!-- Deadline -->
-              <td>{{ drive.deadline }}</td>
+              <td>
+                {{ drive.application_deadline }}
+              </td>
 
               <!-- Status -->
               <td>
@@ -129,7 +180,9 @@
                   class="status-badge"
                   :class="drive.status?.toLowerCase()"
                 >
+
                   {{ drive.status }}
+
                 </span>
 
               </td>
@@ -138,7 +191,9 @@
               <td>
 
                 <span class="application-count">
+
                   {{ drive.total_applications || 0 }}
+
                 </span>
 
               </td>
@@ -190,7 +245,7 @@
 
     </div>
 
-    <!-- View Modal -->
+    <!-- Modal -->
     <div
       v-if="selectedDrive"
       class="modal-overlay"
@@ -198,6 +253,7 @@
 
       <div class="drive-modal">
 
+        <!-- Header -->
         <div class="modal-header">
 
           <h4>Drive Details</h4>
@@ -211,42 +267,96 @@
 
         </div>
 
+        <!-- Body -->
         <div class="modal-body">
 
+          <!-- Company Circle -->
           <div class="company-circle">
-            {{ selectedDrive.company_name?.charAt(0) }}
+
+            {{
+              selectedDrive.company_name
+                ? selectedDrive.company_name.charAt(0)
+                : "C"
+            }}
+
           </div>
 
-          <h3>{{ selectedDrive.job_title }}</h3>
+          <!-- Job -->
+          <h3>
+            {{ selectedDrive.job_title }}
+          </h3>
 
+          <!-- Company -->
           <p class="company-name">
             {{ selectedDrive.company_name }}
           </p>
 
+          <!-- Details -->
           <div class="details-grid">
 
             <div class="detail-card">
-              <h6>Branch</h6>
-              <p>{{ selectedDrive.branch }}</p>
+
+              <h6>Eligible Branch</h6>
+
+              <p>
+                {{ selectedDrive.eligible_branch }}
+              </p>
+
             </div>
 
             <div class="detail-card">
-              <h6>CGPA</h6>
-              <p>{{ selectedDrive.cgpa }}</p>
+
+              <h6>Minimum CGPA</h6>
+
+              <p>
+                {{ selectedDrive.min_cgpa }}
+              </p>
+
             </div>
 
             <div class="detail-card">
+
+              <h6>Eligible Year</h6>
+
+              <p>
+                {{ selectedDrive.eligible_year }}
+              </p>
+
+            </div>
+
+            <div class="detail-card">
+
               <h6>Deadline</h6>
-              <p>{{ selectedDrive.deadline }}</p>
+
+              <p>
+                {{ selectedDrive.application_deadline }}
+              </p>
+
             </div>
 
             <div class="detail-card">
+
               <h6>Status</h6>
-              <p>{{ selectedDrive.status }}</p>
+
+              <p>
+                {{ selectedDrive.status }}
+              </p>
+
+            </div>
+
+            <div class="detail-card">
+
+              <h6>Total Applications</h6>
+
+              <p>
+                {{ selectedDrive.total_applications || 0 }}
+              </p>
+
             </div>
 
           </div>
 
+          <!-- Description -->
           <div class="description-box">
 
             <h5>Job Description</h5>
@@ -268,7 +378,12 @@
 
 <script setup>
 import axios from 'axios'
-import { computed, onMounted, ref } from 'vue'
+
+import {
+  computed,
+  onMounted,
+  ref
+} from 'vue'
 
 const loading = ref(true)
 
@@ -278,9 +393,16 @@ const drives = ref([])
 
 const selectedDrive = ref(null)
 
+
+// ======================================
+// FETCH DRIVES
+// ======================================
+
 const fetchDrives = async () => {
 
   try {
+
+    loading.value = true
 
     const token = localStorage.getItem('token')
 
@@ -299,15 +421,31 @@ const fetchDrives = async () => {
 
     console.log(error)
 
+    alert(
+      error.response?.data?.message ||
+      'Failed to load drives.'
+    )
+
   } finally {
 
     loading.value = false
   }
 }
 
+
+// ======================================
+// MOUNT
+// ======================================
+
 onMounted(() => {
+
   fetchDrives()
 })
+
+
+// ======================================
+// FILTERED DRIVES
+// ======================================
 
 const filteredDrives = computed(() => {
 
@@ -323,17 +461,27 @@ const filteredDrives = computed(() => {
         ?.toLowerCase()
         .includes(search.value.toLowerCase()) ||
 
-      drive.branch
+      drive.eligible_branch
         ?.toLowerCase()
         .includes(search.value.toLowerCase())
     )
   })
 })
 
+
+// ======================================
+// VIEW DRIVE
+// ======================================
+
 const viewDrive = (drive) => {
 
   selectedDrive.value = drive
 }
+
+
+// ======================================
+// APPROVE DRIVE
+// ======================================
 
 const approveDrive = async (driveId) => {
 
@@ -351,7 +499,7 @@ const approveDrive = async (driveId) => {
       }
     )
 
-    alert('Drive Approved')
+    alert('Drive Approved Successfully')
 
     fetchDrives()
 
@@ -359,9 +507,17 @@ const approveDrive = async (driveId) => {
 
     console.log(error)
 
-    alert('Approval Failed')
+    alert(
+      error.response?.data?.message ||
+      'Approval Failed'
+    )
   }
 }
+
+
+// ======================================
+// REJECT DRIVE
+// ======================================
 
 const rejectDrive = async (driveId) => {
 
@@ -379,7 +535,7 @@ const rejectDrive = async (driveId) => {
       }
     )
 
-    alert('Drive Rejected')
+    alert('Drive Rejected Successfully')
 
     fetchDrives()
 
@@ -387,9 +543,17 @@ const rejectDrive = async (driveId) => {
 
     console.log(error)
 
-    alert('Reject Failed')
+    alert(
+      error.response?.data?.message ||
+      'Reject Failed'
+    )
   }
 }
+
+
+// ======================================
+// DELETE DRIVE
+// ======================================
 
 const deleteDrive = async (driveId) => {
 
@@ -412,7 +576,7 @@ const deleteDrive = async (driveId) => {
       }
     )
 
-    alert('Drive Deleted')
+    alert('Drive Deleted Successfully')
 
     fetchDrives()
 
@@ -420,11 +584,13 @@ const deleteDrive = async (driveId) => {
 
     console.log(error)
 
-    alert('Delete Failed')
+    alert(
+      error.response?.data?.message ||
+      'Delete Failed'
+    )
   }
 }
 </script>
-
 <style scoped>
 .manage-drives-page {
   min-height: 100vh;

@@ -1,287 +1,183 @@
 <template>
   <div class="create-drive-page">
 
-    <div class="container py-5">
+    <!-- Header -->
+    <div class="page-header">
 
-      <!-- PAGE HEADER -->
+      <div>
+        <h2>Create Placement Drive</h2>
 
-      <div class="page-header mb-5">
-
-        <div>
-          <h2>Create Placement Drive</h2>
-
-          <p>
-            Create and publish new placement opportunities
-            for eligible students.
-          </p>
-        </div>
-
-        <router-link
-          to="/company/dashboard"
-          class="btn btn-outline-primary"
-        >
-          <i class="bi bi-arrow-left"></i>
-          Back Dashboard
-        </router-link>
-
+        <p>
+          Publish new campus recruitment opportunities
+        </p>
       </div>
 
-      <!-- ALERT -->
-
-      <div
-        v-if="message"
-        class="alert"
-        :class="success ? 'alert-success' : 'alert-danger'"
+      <router-link
+        to="/company/dashboard"
+        class="back-btn"
       >
-        {{ message }}
-      </div>
+        ← Back
+      </router-link>
 
-      <!-- FORM CARD -->
+    </div>
 
-      <div class="form-card">
+    <!-- Form Card -->
+    <div class="form-card">
 
-        <form @submit.prevent="createDrive">
+      <form @submit.prevent="createDrive">
 
-          <div class="row">
+        <!-- Job Title -->
+        <div class="form-group">
 
-            <!-- JOB TITLE -->
+          <label>Job Title</label>
 
-            <div class="col-md-6 mb-4">
+          <input
+            type="text"
+            v-model="form.job_title"
+            placeholder="Enter job title"
+            required
+          />
 
-              <label class="form-label">
-                Job Title
-              </label>
+        </div>
 
-              <input
-                type="text"
-                class="form-control"
-                placeholder="Frontend Developer"
-                v-model="form.job_title"
-              />
+        <!-- Job Description -->
+        <div class="form-group">
 
-            </div>
+          <label>Job Description</label>
 
-            <!-- REQUIRED BRANCH -->
+          <textarea
+            rows="6"
+            v-model="form.job_description"
+            placeholder="Describe job role, responsibilities, package, etc."
+            required
+          ></textarea>
 
-            <div class="col-md-6 mb-4">
+        </div>
 
-              <label class="form-label">
-                Required Branch
-              </label>
+        <!-- Grid -->
+        <div class="form-grid">
 
-              <select
-                class="form-select"
-                v-model="form.required_branch"
-              >
+          <!-- Branch -->
+          <div class="form-group">
 
-                <option value="">
-                  Select Branch
-                </option>
+            <label>Required Branch</label>
 
-                <option
-                  v-for="branch in branches"
-                  :key="branch"
-                  :value="branch"
-                >
-                  {{ branch }}
-                </option>
-
-              </select>
-
-            </div>
-
-            <!-- MIN CGPA -->
-
-            <div class="col-md-6 mb-4">
-
-              <label class="form-label">
-                Minimum CGPA
-              </label>
-
-              <input
-                type="number"
-                step="0.1"
-                min="0"
-                max="10"
-                class="form-control"
-                placeholder="7.0"
-                v-model="form.min_cgpa"
-              />
-
-            </div>
-
-            <!-- PASSING YEAR -->
-
-            <div class="col-md-6 mb-4">
-
-              <label class="form-label">
-                Passing Year
-              </label>
-
-              <select
-                class="form-select"
-                v-model="form.passing_year"
-              >
-
-                <option value="">
-                  Select Year
-                </option>
-
-                <option
-                  v-for="year in years"
-                  :key="year"
-                  :value="year"
-                >
-                  {{ year }}
-                </option>
-
-              </select>
-
-            </div>
-
-            <!-- DEADLINE -->
-
-            <div class="col-md-6 mb-4">
-
-              <label class="form-label">
-                Application Deadline
-              </label>
-
-              <input
-                type="date"
-                class="form-control"
-                v-model="form.application_deadline"
-              />
-
-            </div>
-
-            <!-- STATUS -->
-
-            <div class="col-md-6 mb-4">
-
-              <label class="form-label">
-                Drive Status
-              </label>
-
-              <input
-                type="text"
-                class="form-control bg-light"
-                value="Pending Admin Approval"
-                disabled
-              />
-
-            </div>
-
-            <!-- JOB DESCRIPTION -->
-
-            <div class="col-12 mb-4">
-
-              <label class="form-label">
-                Job Description
-              </label>
-
-              <textarea
-                rows="7"
-                class="form-control"
-                placeholder="Describe job role, skills, salary package, interview rounds etc."
-                v-model="form.job_description"
-              ></textarea>
-
-            </div>
-
-          </div>
-
-          <!-- SUBMIT BUTTON -->
-
-          <div class="submit-area">
-
-            <button
-              type="submit"
-              class="btn btn-primary submit-btn"
-              :disabled="loading"
+            <select
+              v-model="form.required_branch"
+              required
             >
+              <option value="">
+                Select Branch
+              </option>
 
-              <span
-                v-if="loading"
-                class="spinner-border spinner-border-sm me-2"
-              ></span>
+              <option value="CSE">
+                CSE
+              </option>
 
-              {{ loading ? "Creating Drive..." : "Create Placement Drive" }}
+              <option value="IT">
+                IT
+              </option>
 
-            </button>
+              <option value="ECE">
+                ECE
+              </option>
 
-          </div>
+              <option value="EEE">
+                EEE
+              </option>
 
-        </form>
+              <option value="ME">
+                Mechanical
+              </option>
 
-      </div>
+              <option value="CE">
+                Civil
+              </option>
 
-      <!-- INFO SECTION -->
+              <option value="ALL">
+                All Branches
+              </option>
 
-      <div class="info-section mt-5">
-
-        <div class="row g-4">
-
-          <div class="col-md-4">
-
-            <div class="info-card">
-
-              <div class="icon-box blue">
-                <i class="bi bi-shield-check"></i>
-              </div>
-
-              <h5>Admin Approval</h5>
-
-              <p>
-                Every placement drive requires admin approval
-                before students can apply.
-              </p>
-
-            </div>
+            </select>
 
           </div>
 
-          <div class="col-md-4">
+          <!-- CGPA -->
+          <div class="form-group">
 
-            <div class="info-card">
+            <label>Minimum CGPA</label>
 
-              <div class="icon-box green">
-                <i class="bi bi-people-fill"></i>
-              </div>
-
-              <h5>Eligibility Filter</h5>
-
-              <p>
-                Students will only see drives matching
-                branch, CGPA, and passing year criteria.
-              </p>
-
-            </div>
+            <input
+              type="number"
+              step="0.1"
+              min="0"
+              max="10"
+              v-model="form.min_cgpa"
+              placeholder="e.g. 7.5"
+              required
+            />
 
           </div>
 
-          <div class="col-md-4">
+          <!-- Passing Year -->
+          <div class="form-group">
 
-            <div class="info-card">
+            <label>Passing Year</label>
 
-              <div class="icon-box orange">
-                <i class="bi bi-clock-history"></i>
-              </div>
+            <input
+              type="number"
+              v-model="form.passing_year"
+              placeholder="e.g. 2027"
+              required
+            />
 
-              <h5>Track Applications</h5>
+          </div>
 
-              <p>
-                View applicants, shortlist candidates,
-                and manage recruitment workflow easily.
-              </p>
+          <!-- Deadline -->
+          <div class="form-group">
 
-            </div>
+            <label>Application Deadline</label>
+
+            <input
+              type="date"
+              v-model="form.application_deadline"
+              required
+            />
 
           </div>
 
         </div>
 
-      </div>
+        <!-- Buttons -->
+        <div class="button-group">
+
+          <button
+            type="submit"
+            class="submit-btn"
+            :disabled="loading"
+          >
+
+            <span v-if="loading">
+              Creating...
+            </span>
+
+            <span v-else>
+              Create Placement Drive
+            </span>
+
+          </button>
+
+          <button
+            type="button"
+            class="cancel-btn"
+            @click="$router.push('/company/dashboard')"
+          >
+            Cancel
+          </button>
+
+        </div>
+
+      </form>
 
     </div>
 
@@ -289,7 +185,7 @@
 </template>
 
 <script>
-import axios from "axios"
+import axios from "axios";
 
 export default {
 
@@ -301,52 +197,18 @@ export default {
 
       loading: false,
 
-      success: false,
-
-      message: "",
-
       form: {
 
         job_title: "",
-
         job_description: "",
-
         required_branch: "",
-
         min_cgpa: "",
-
         passing_year: "",
-
         application_deadline: ""
 
-      },
+      }
 
-      branches: [
-
-        "Computer Science",
-        "Information Technology",
-        "Electronics",
-        "Electrical",
-        "Mechanical",
-        "Civil",
-        "Data Science",
-        "Mathematics",
-        "MBA",
-        "All Branches"
-
-      ],
-
-      years: [
-
-        2024,
-        2025,
-        2026,
-        2027,
-        2028
-
-      ]
-
-    }
+    };
 
   },
 
@@ -354,35 +216,17 @@ export default {
 
     async createDrive() {
 
-      this.message = ""
-
-      this.success = false
-
-      if (
-
-        !this.form.job_title ||
-        !this.form.job_description ||
-        !this.form.required_branch ||
-        !this.form.min_cgpa ||
-        !this.form.passing_year ||
-        !this.form.application_deadline
-
-      ) {
-
-        this.message = "Please fill all required fields."
-        return
-
-      }
-
       try {
 
-        this.loading = true
+        this.loading = true;
 
-        const token = localStorage.getItem("token")
+        const token = localStorage.getItem(
+          "token"
+        );
 
         const response = await axios.post(
 
-          "http://127.0.0.1:5000/api/company/drive/create",
+          "http://127.0.0.1:5000/api/company/drives",
 
           this.form,
 
@@ -390,62 +234,43 @@ export default {
 
             headers: {
 
-              Authorization: `Bearer ${token}`
+              Authorization:
+                `Bearer ${token}`
 
             }
 
           }
 
-        )
+        );
 
-        this.success = true
+        alert(
+          response.data.message ||
+          "Drive created successfully."
+        );
 
-        this.message = response.data.message
-
-        // RESET FORM
-
-        this.form = {
-
-          job_title: "",
-
-          job_description: "",
-
-          required_branch: "",
-
-          min_cgpa: "",
-
-          passing_year: "",
-
-          application_deadline: ""
-
-        }
+        this.$router.push(
+          "/company/dashboard"
+        );
 
       }
 
       catch (error) {
 
-        this.success = false
+        console.error(error);
 
-        if (error.response) {
+        alert(
 
-          this.message =
-            error.response.data.message ||
-            "Failed to create drive."
+          error.response?.data?.message ||
 
-        }
+          "Failed to create drive."
 
-        else {
-
-          this.message =
-            "Server connection failed."
-
-        }
+        );
 
       }
 
       finally {
 
-        this.loading = false
+        this.loading = false;
 
       }
 
@@ -453,18 +278,22 @@ export default {
 
   }
 
-}
+};
 </script>
 
 <style scoped>
 
-/* =========================
-   PAGE
-========================= */
-
 .create-drive-page {
+
   min-height: 100vh;
-  background: #f5f7fb;
+  padding: 30px;
+  background:
+    linear-gradient(
+      135deg,
+      #fff5f8,
+      #f5f3ff
+    );
+
 }
 
 /* =========================
@@ -472,22 +301,53 @@ export default {
 ========================= */
 
 .page-header {
+
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 30px;
   gap: 20px;
   flex-wrap: wrap;
+
 }
 
 .page-header h2 {
-  font-size: 2.2rem;
-  font-weight: 700;
-  color: #0f172a;
+
+  margin: 0;
+  font-size: 34px;
+  color: #312e81;
+
 }
 
 .page-header p {
-  margin-top: 10px;
+
+  margin-top: 8px;
   color: #64748b;
+
+}
+
+.back-btn {
+
+  text-decoration: none;
+
+  background: white;
+  color: #7c3aed;
+
+  border: 2px solid #7c3aed;
+
+  padding: 12px 18px;
+  border-radius: 12px;
+
+  font-weight: 600;
+  transition: 0.3s;
+
+}
+
+.back-btn:hover {
+
+  background: #7c3aed;
+  color: white;
+
 }
 
 /* =========================
@@ -495,118 +355,152 @@ export default {
 ========================= */
 
 .form-card {
+
+  max-width: 1000px;
+  margin: auto;
+
   background: white;
-  border-radius: 24px;
-  padding: 40px;
+  padding: 35px;
+
+  border-radius: 28px;
+
   box-shadow:
-    0 10px 30px rgba(0,0,0,0.06);
+    0 20px 50px rgba(124, 58, 237, 0.08);
+
 }
 
 /* =========================
    FORM
 ========================= */
 
-.form-label {
-  font-weight: 600;
+.form-group {
+
+  margin-bottom: 24px;
+
+}
+
+.form-group label {
+
+  display: block;
   margin-bottom: 10px;
-  color: #1e293b;
+
+  font-weight: 700;
+  color: #334155;
+
 }
 
-.form-control,
-.form-select {
-  border-radius: 14px;
+.form-group input,
+.form-group textarea,
+.form-group select {
+
+  width: 100%;
+
   padding: 14px 16px;
-  border: 1px solid #dbe3ef;
-  min-height: 52px;
-  box-shadow: none;
+
+  border: 1px solid #dbeafe;
+
+  border-radius: 14px;
+
+  font-size: 15px;
+  outline: none;
+
+  transition: 0.3s;
+  background: #fafafa;
+
 }
 
-.form-control:focus,
-.form-select:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 0.15rem rgba(37,99,235,0.15);
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+
+  border-color: #7c3aed;
+
+  box-shadow:
+    0 0 0 4px rgba(124, 58, 237, 0.08);
+
+  background: white;
+
 }
 
-textarea.form-control {
-  min-height: 180px;
-  resize: none;
+.form-grid {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(auto-fit, minmax(220px, 1fr));
+
+  gap: 20px;
+
 }
 
-.submit-area {
-  margin-top: 15px;
+/* =========================
+   BUTTONS
+========================= */
+
+.button-group {
+
+  display: flex;
+  gap: 16px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+
+}
+
+.submit-btn,
+.cancel-btn {
+
+  border: none;
+  padding: 14px 24px;
+  border-radius: 14px;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  cursor: pointer;
+  transition: 0.3s;
+
 }
 
 .submit-btn {
-  padding: 14px 28px;
-  border-radius: 14px;
-  font-weight: 600;
-  min-width: 240px;
-}
 
-/* =========================
-   INFO SECTION
-========================= */
+  background:
+    linear-gradient(
+      135deg,
+      #7c3aed,
+      #dc2626
+    );
 
-.info-card {
-  background: white;
-  border-radius: 22px;
-  padding: 30px;
-  height: 100%;
-  box-shadow:
-    0 8px 24px rgba(0,0,0,0.05);
-  transition: 0.3s ease;
-}
-
-.info-card:hover {
-  transform: translateY(-6px);
-}
-
-.icon-box {
-  width: 65px;
-  height: 65px;
-  border-radius: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 20px;
-}
-
-.icon-box i {
-  font-size: 1.7rem;
   color: white;
+
+  box-shadow:
+    0 12px 25px rgba(124, 58, 237, 0.2);
+
 }
 
-.blue {
-  background: #2563eb;
+.submit-btn:hover {
+
+  transform: translateY(-2px);
+
 }
 
-.green {
-  background: #10b981;
+.submit-btn:disabled {
+
+  opacity: 0.7;
+  cursor: not-allowed;
+
 }
 
-.orange {
-  background: #f59e0b;
+.cancel-btn {
+
+  background: #f1f5f9;
+  color: #334155;
+
 }
 
-.info-card h5 {
-  font-weight: 700;
-  margin-bottom: 14px;
-  color: #0f172a;
-}
+.cancel-btn:hover {
 
-.info-card p {
-  color: #64748b;
-  line-height: 1.7;
-}
+  background: #e2e8f0;
 
-/* =========================
-   ALERT
-========================= */
-
-.alert {
-  border-radius: 14px;
-  padding: 16px 18px;
-  margin-bottom: 25px;
 }
 
 /* =========================
@@ -615,16 +509,42 @@ textarea.form-control {
 
 @media (max-width: 768px) {
 
-  .form-card {
-    padding: 25px;
+  .create-drive-page {
+
+    padding: 18px;
+
+  }
+
+  .page-header {
+
+    flex-direction: column;
+    align-items: flex-start;
+
   }
 
   .page-header h2 {
-    font-size: 1.8rem;
+
+    font-size: 28px;
+
   }
 
-  .submit-btn {
+  .form-card {
+
+    padding: 24px;
+
+  }
+
+  .button-group {
+
+    flex-direction: column;
+
+  }
+
+  .submit-btn,
+  .cancel-btn {
+
     width: 100%;
+
   }
 
 }

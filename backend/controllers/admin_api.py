@@ -6,6 +6,8 @@ from flask_jwt_extended import (
     get_jwt
 )
 
+from sqlalchemy import or_
+
 from data.models import (
     db,
     User,
@@ -114,18 +116,29 @@ class ManageCompaniesAPI(Resource):
             company_list.append({
 
                 "id": company.id,
-
                 "name": company.name,
-
                 "email": company.email,
-
-                "website": company.website,
-
-                "hr_contact": company.hr_contact,
-
+                "role": company.role,
                 "approved": company.approved,
+                "active": company.active,
 
-                "active": company.active
+                "company_name":
+                    company.company_name,
+
+                "industry":
+                    company.industry,
+
+                "location":
+                    company.location,
+
+                "website":
+                    company.website,
+
+                "hr_contact":
+                    company.hr_contact,
+
+                "company_description":
+                    company.company_description
 
             })
 
@@ -168,7 +181,8 @@ class ApproveCompanyAPI(Resource):
         db.session.commit()
 
         return {
-            "message": "Company approved successfully."
+            "message":
+                "Company approved successfully."
         }, 200
 
 
@@ -202,7 +216,8 @@ class RejectCompanyAPI(Resource):
         db.session.commit()
 
         return {
-            "message": "Company rejected successfully."
+            "message":
+                "Company rejected successfully."
         }, 200
 
 
@@ -234,7 +249,8 @@ class DeactivateCompanyAPI(Resource):
         if not company.active:
 
             return {
-                "message": "Company already deactivated."
+                "message":
+                    "Company already deactivated."
             }, 400
 
         company.active = False
@@ -242,7 +258,85 @@ class DeactivateCompanyAPI(Resource):
         db.session.commit()
 
         return {
-            "message": "Company deactivated successfully."
+            "message":
+                "Company deactivated successfully."
+        }, 200
+
+
+# ======================================
+# ACTIVATE COMPANY
+# ======================================
+
+class ActivateCompanyAPI(Resource):
+
+    @jwt_required()
+    def put(self, company_id):
+
+        admin_check = admin_required()
+
+        if admin_check:
+            return admin_check
+
+        company = User.query.filter_by(
+            id=company_id,
+            role="company"
+        ).first()
+
+        if not company:
+
+            return {
+                "message": "Company not found."
+            }, 404
+
+        if company.active:
+
+            return {
+                "message":
+                    "Company already active."
+            }, 400
+
+        company.active = True
+
+        db.session.commit()
+
+        return {
+            "message":
+                "Company activated successfully."
+        }, 200
+
+
+# ======================================
+# DELETE COMPANY
+# ======================================
+
+class DeleteCompanyAPI(Resource):
+
+    @jwt_required()
+    def delete(self, company_id):
+
+        admin_check = admin_required()
+
+        if admin_check:
+            return admin_check
+
+        company = User.query.filter_by(
+            id=company_id,
+            role="company"
+        ).first()
+
+        if not company:
+
+            return {
+                "message": "Company not found."
+            }, 404
+
+        db.session.delete(company)
+
+        db.session.commit()
+
+        return {
+            "message":
+                "Company deleted successfully."
         }, 200
 
 
@@ -271,20 +365,18 @@ class ManageStudentsAPI(Resource):
             student_list.append({
 
                 "id": student.id,
-
                 "name": student.name,
-
                 "email": student.email,
+                "role": student.role,
+                "active": student.active,
 
                 "branch": student.branch,
-
                 "cgpa": student.cgpa,
-
+                "college": student.college,
+                "phone": student.phone,
+                "skills": student.skills,
                 "year": student.year,
-
-                "resume": student.resume,
-
-                "active": student.active
+                "resume": student.resume
 
             })
 
@@ -316,18 +408,83 @@ class DeactivateStudentAPI(Resource):
                 "message": "Student not found."
             }, 404
 
-        if not student.active:
-
-            return {
-                "message": "Student already deactivated."
-            }, 400
-
         student.active = False
 
         db.session.commit()
 
         return {
-            "message": "Student deactivated successfully."
+            "message":
+                "Student deactivated successfully."
+        }, 200
+
+
+# ======================================
+# ACTIVATE STUDENT
+# ======================================
+
+class ActivateStudentAPI(Resource):
+
+    @jwt_required()
+    def put(self, student_id):
+
+        admin_check = admin_required()
+
+        if admin_check:
+            return admin_check
+
+        student = User.query.filter_by(
+            id=student_id,
+            role="student"
+        ).first()
+
+        if not student:
+
+            return {
+                "message": "Student not found."
+            }, 404
+
+        student.active = True
+
+        db.session.commit()
+
+        return {
+            "message":
+                "Student activated successfully."
+        }, 200
+
+
+# ======================================
+# DELETE STUDENT
+# ======================================
+
+class DeleteStudentAPI(Resource):
+
+    @jwt_required()
+    def delete(self, student_id):
+
+        admin_check = admin_required()
+
+        if admin_check:
+            return admin_check
+
+        student = User.query.filter_by(
+            id=student_id,
+            role="student"
+        ).first()
+
+        if not student:
+
+            return {
+                "message": "Student not found."
+            }, 404
+
+        db.session.delete(student)
+
+        db.session.commit()
+
+        return {
+            "message":
+                "Student deleted successfully."
         }, 200
 
 
@@ -359,7 +516,11 @@ class ManageDrivesAPI(Resource):
                     drive.company_id,
 
                 "company_name":
-                    drive.company.name,
+                    (
+                        drive.placed_company.name
+                        if drive.placed_company
+                        else None
+                    ),
 
                 "job_title":
                     drive.job_title,
@@ -367,14 +528,14 @@ class ManageDrivesAPI(Resource):
                 "job_description":
                     drive.job_description,
 
-                "required_branch":
-                    drive.required_branch,
+                "eligible_branch":
+                    drive.eligible_branch,
 
                 "min_cgpa":
                     drive.min_cgpa,
 
-                "passing_year":
-                    drive.passing_year,
+                "eligible_year":
+                    drive.eligible_year,
 
                 "application_deadline":
                     str(drive.application_deadline),
@@ -412,18 +573,13 @@ class ApproveDriveAPI(Resource):
                 "message": "Drive not found."
             }, 404
 
-        if drive.status == "approved":
-
-            return {
-                "message": "Drive already approved."
-            }, 400
-
         drive.status = "approved"
 
         db.session.commit()
 
         return {
-            "message": "Placement drive approved successfully."
+            "message":
+                "Placement drive approved successfully."
         }, 200
 
 
@@ -452,18 +608,48 @@ class RejectDriveAPI(Resource):
                 "message": "Drive not found."
             }, 404
 
-        if drive.status == "rejected":
-
-            return {
-                "message": "Drive already rejected."
-            }, 400
-
         drive.status = "rejected"
 
         db.session.commit()
 
         return {
-            "message": "Placement drive rejected successfully."
+            "message":
+                "Placement drive rejected successfully."
+        }, 200
+
+
+# ======================================
+# DELETE DRIVE
+# ======================================
+
+class DeleteDriveAPI(Resource):
+
+    @jwt_required()
+    def delete(self, drive_id):
+
+        admin_check = admin_required()
+
+        if admin_check:
+            return admin_check
+
+        drive = db.session.get(
+            Placement,
+            drive_id
+        )
+
+        if not drive:
+
+            return {
+                "message": "Drive not found."
+            }, 404
+
+        db.session.delete(drive)
+
+        db.session.commit()
+
+        return {
+            "message":
+                "Placement drive deleted successfully."
         }, 200
 
 
@@ -487,10 +673,24 @@ class ViewApplicationsAPI(Resource):
 
         for application in applications:
 
+            job = application.job
+
+            company_name = None
+            job_title = None
+
+            if job and job.company:
+                company_name = job.company.name
+
+            if job:
+                job_title = job.title
+
             application_list.append({
 
                 "application_id":
                     application.id,
+
+                "student_id":
+                    application.student.id,
 
                 "student_name":
                     application.student.name,
@@ -499,21 +699,23 @@ class ViewApplicationsAPI(Resource):
                     application.student.email,
 
                 "company_name":
-                    application.drive.company.name,
+                    company_name,
 
                 "job_title":
-                    application.drive.job_title,
+                    job_title,
 
                 "status":
                     application.status,
 
                 "application_date":
-                    str(application.application_date),
+                    str(application.applied_at),
 
                 "interview_date":
-                    str(application.interview_date)
-                    if application.interview_date
-                    else None
+                    (
+                        str(application.interview_date)
+                        if application.interview_date
+                        else None
+                    )
 
             })
 
@@ -547,7 +749,7 @@ class SearchUsersAPI(Resource):
 
         users = User.query.filter(
 
-            db.or_(
+            or_(
 
                 User.name.ilike(
                     f"%{keyword}%"
@@ -558,6 +760,18 @@ class SearchUsersAPI(Resource):
                 ),
 
                 User.role.ilike(
+                    f"%{keyword}%"
+                ),
+
+                User.branch.ilike(
+                    f"%{keyword}%"
+                ),
+
+                User.college.ilike(
+                    f"%{keyword}%"
+                ),
+
+                User.skills.ilike(
                     f"%{keyword}%"
                 )
 
@@ -579,7 +793,9 @@ class SearchUsersAPI(Resource):
 
                 "role": user.role,
 
-                "active": user.active
+                "active": user.active,
+
+                "approved": user.approved
 
             })
 

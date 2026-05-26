@@ -122,30 +122,12 @@
               </div>
 
               <!-- Department -->
-              <div class="form-group">
 
-                <label>Department</label>
-
-                <input
-                  type="text"
-                  v-model="form.department"
-                />
-
-              </div>
 
             </div>
 
             <!-- Address -->
-            <div class="form-group">
 
-              <label>Office Address</label>
-
-              <textarea
-                rows="4"
-                v-model="form.address"
-              ></textarea>
-
-            </div>
 
             <!-- Buttons -->
             <div class="button-group">
@@ -310,7 +292,7 @@ const fetchProfile = async () => {
 onMounted(() => {
   fetchProfile()
 })
-
+// Update Failed
 const updateProfile = async () => {
 
   try {
@@ -318,7 +300,7 @@ const updateProfile = async () => {
     const token = localStorage.getItem('token')
 
     await axios.put(
-      'http://127.0.0.1:5000/api/admin/profile',
+      'http://127.0.0.1:5000/api/profile',
       form.value,
       {
         headers: {

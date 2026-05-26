@@ -1,59 +1,47 @@
 from flask_restful import Resource
 from flask import request
+
 from flask_jwt_extended import (
     jwt_required,
-    get_jwt_identity,
-    get_jwt
+    get_jwt_identity
 )
 
-from data.models import *
-from data.models import db
+from data.models import (
+    User,
+    Placement,
+    Application,
+    JobPosition,
+    db
+)
+
 from datetime import datetime
 
 
-
-# COMPANY ACCESS CHECK
-
-
-def company_required():
-
-    claims = get_jwt()
-
-    if claims.get("role") != "company":
-
-        return {
-            "message": "Company access required."
-        }, 403
-
-    return None
-
-
-
+# ======================================
 # COMPANY DASHBOARD API
-
+# ======================================
 
 class CompanyDashboardAPI(Resource):
 
     @jwt_required()
     def get(self):
 
-        company_check = company_required()
-
-        if company_check:
-            return company_check
-
         company_id = int(get_jwt_identity())
 
-        company = User.query.get(company_id)
+        company = db.session.get(User, company_id)
+
+        if not company:
+
+            return {
+                "message": "Company not found."
+            }, 404
+
+        # ==================================
+        # DRIVE STATS
+        # ==================================
 
         total_drives = Placement.query.filter_by(
             company_id=company_id
-        ).count()
-
-        total_applications = Application.query.join(
-            Placement
-        ).filter(
-            Placement.company_id == company_id
         ).count()
 
         approved_drives = Placement.query.filter_by(
@@ -66,52 +54,76 @@ class CompanyDashboardAPI(Resource):
             status="pending"
         ).count()
 
+        # ==================================
+        # TOTAL APPLICATIONS
+        # ==================================
+
+        total_applications = db.session.query(
+            Application
+        ).join(
+            JobPosition,
+            Application.job_id == JobPosition.id
+        ).filter(
+            JobPosition.company_id == company_id
+        ).count()
+
         return {
 
             "company": {
 
                 "id": company.id,
-
                 "name": company.name,
-
                 "email": company.email,
+                "role": company.role,
 
-                "website": company.website,
+                "approved": company.approved,
+                "active": company.active,
 
-                "hr_contact": company.hr_contact,
+                "company_name":
+                    company.company_name or "",
 
-                "approved": company.approved
+                "industry":
+                    company.industry or "",
 
+                "location":
+                    company.location or "",
+
+                "website":
+                    company.website or "",
+
+                "hr_contact":
+                    company.hr_contact or "",
+
+                "company_description":
+                    company.company_description or ""
             },
 
             "stats": {
 
-                "total_drives": total_drives,
+                "total_drives":
+                    total_drives,
 
-                "approved_drives": approved_drives,
+                "approved_drives":
+                    approved_drives,
 
-                "pending_drives": pending_drives,
+                "pending_drives":
+                    pending_drives,
 
-                "total_applications": total_applications
-
+                "total_applications":
+                    total_applications
             }
 
         }, 200
 
 
-
+# ======================================
 # COMPANY DRIVES API
-
+# ======================================
 
 class CompanyDrivesAPI(Resource):
 
     @jwt_required()
     def get(self):
-
-        company_check = company_required()
-
-        if company_check:
-            return company_check
 
         company_id = int(get_jwt_identity())
 
@@ -123,27 +135,33 @@ class CompanyDrivesAPI(Resource):
 
         for drive in drives:
 
-            applicants = Application.query.filter_by(
-                drive_id=drive.id
-            ).count()
+            applicants = 0
+
+            if drive.position_id:
+
+                applicants = Application.query.filter_by(
+                    job_id=drive.position_id
+                ).count()
 
             drive_list.append({
 
-                "id": drive.id,
+                "id":
+                    drive.id,
 
-                "job_title": drive.job_title,
+                "job_title":
+                    drive.job_title,
 
                 "job_description":
                     drive.job_description,
 
-                "required_branch":
-                    drive.required_branch,
+                "eligible_branch":
+                    drive.eligible_branch,
 
                 "min_cgpa":
                     drive.min_cgpa,
 
-                "passing_year":
-                    drive.passing_year,
+                "eligible_year":
+                    drive.eligible_year,
 
                 "application_deadline":
                     str(drive.application_deadline),
@@ -153,28 +171,26 @@ class CompanyDrivesAPI(Resource):
 
                 "total_applicants":
                     applicants
-
             })
 
         return drive_list, 200
 
 
+# ======================================
 # CREATE PLACEMENT DRIVE
-
+# ======================================
 
 class CreateDriveAPI(Resource):
 
     @jwt_required()
     def post(self):
 
-        company_check = company_required()
-
-        if company_check:
-            return company_check
-
         company_id = int(get_jwt_identity())
 
-        company = User.query.get(company_id)
+        company = db.session.get(
+            User,
+            company_id
+        )
 
         if not company:
 
@@ -182,24 +198,26 @@ class CreateDriveAPI(Resource):
                 "message": "Company not found."
             }, 404
 
-        
+        # ==================================
         # COMPANY APPROVAL CHECK
-        
+        # ==================================
 
         if not company.approved:
 
             return {
-                "message": "Company not approved by admin."
+                "message":
+                    "Company not approved by admin."
             }, 403
 
-        
-        # COMPANY ACTIVE CHECK
-        
+        # ==================================
+        # ACTIVE CHECK
+        # ==================================
 
         if not company.active:
 
             return {
-                "message": "Company account is deactivated."
+                "message":
+                    "Company account is deactivated."
             }, 403
 
         data = request.get_json()
@@ -207,12 +225,13 @@ class CreateDriveAPI(Resource):
         if not data:
 
             return {
-                "message": "Input data required."
+                "message":
+                    "Input data required."
             }, 400
 
-        
+        # ==================================
         # GET DATA
-        
+        # ==================================
 
         job_title = data.get(
             "job_title"
@@ -222,83 +241,124 @@ class CreateDriveAPI(Resource):
             "job_description"
         )
 
-        required_branch = data.get(
-            "required_branch"
+        eligible_branch = data.get(
+            "eligible_branch"
         )
 
         min_cgpa = data.get(
             "min_cgpa"
         )
 
-        passing_year = data.get(
-            "passing_year"
+        eligible_year = data.get(
+            "eligible_year"
         )
 
         application_deadline = data.get(
             "application_deadline"
         )
 
-        
+        location = data.get(
+            "location"
+        )
+
+        salary_package = data.get(
+            "salary_package"
+        )
+
+        # ==================================
         # VALIDATION
-        
+        # ==================================
 
         if not all([
 
             job_title,
             job_description,
-            required_branch,
-            min_cgpa,
-            passing_year,
+            eligible_branch,
+            eligible_year,
             application_deadline
 
         ]):
 
             return {
-                "message": "All fields are required."
+                "message":
+                    "Required fields missing."
             }, 400
 
-        
+        # ==================================
         # DATE VALIDATION
-        
+        # ==================================
 
         try:
 
             deadline_date = datetime.strptime(
-
                 application_deadline,
-
                 "%Y-%m-%d"
-
-            ).date()
+            )
 
         except ValueError:
 
             return {
-                "message": "Invalid date format."
+                "message":
+                    "Invalid date format. Use YYYY-MM-DD"
             }, 400
 
-        
-        # CREATE DRIVE
-        
+        # ==================================
+        # CREATE JOB POSITION
+        # ==================================
+
+        new_job = JobPosition(
+
+            company_id=company_id,
+
+            title=job_title,
+
+            description=job_description,
+
+            eligible_branch=eligible_branch,
+
+            min_cgpa=float(min_cgpa),
+
+            eligible_year=int(eligible_year),
+
+            job_location=location,
+
+            salary=salary_package,
+
+            application_deadline=deadline_date.date(),
+
+            status="pending"
+        )
+
+        db.session.add(new_job)
+        db.session.flush()
+
+        # ==================================
+        # CREATE PLACEMENT DRIVE
+        # ==================================
 
         new_drive = Placement(
 
             company_id=company_id,
 
+            position_id=new_job.id,
+
             job_title=job_title,
 
             job_description=job_description,
 
-            required_branch=required_branch,
+            eligible_branch=eligible_branch,
 
-            min_cgpa=min_cgpa,
+            min_cgpa=float(min_cgpa),
 
-            passing_year=passing_year,
+            eligible_year=str(eligible_year),
 
             application_deadline=deadline_date,
 
-            status="pending"
+            location=location,
 
+            salary_package=salary_package,
+
+            status="pending"
         )
 
         db.session.add(new_drive)
@@ -318,37 +378,33 @@ class CreateDriveAPI(Resource):
                 "job_title":
                     new_drive.job_title,
 
-                "required_branch":
-                    new_drive.required_branch,
+                "eligible_branch":
+                    new_drive.eligible_branch,
 
                 "min_cgpa":
                     new_drive.min_cgpa,
 
-                "passing_year":
-                    new_drive.passing_year,
+                "eligible_year":
+                    new_drive.eligible_year,
 
                 "application_deadline":
                     str(new_drive.application_deadline),
 
                 "status":
                     new_drive.status
-
             }
 
         }, 201
 
-# UPDATE PLACEMENT DRIVE
 
+# ======================================
+# UPDATE PLACEMENT DRIVE
+# ======================================
 
 class UpdateDriveAPI(Resource):
 
     @jwt_required()
     def put(self, drive_id):
-
-        company_check = company_required()
-
-        if company_check:
-            return company_check
 
         company_id = int(get_jwt_identity())
 
@@ -360,7 +416,8 @@ class UpdateDriveAPI(Resource):
         if not drive:
 
             return {
-                "message": "Drive not found."
+                "message":
+                    "Drive not found."
             }, 404
 
         data = request.get_json()
@@ -368,12 +425,9 @@ class UpdateDriveAPI(Resource):
         if not data:
 
             return {
-                "message": "Input data required."
+                "message":
+                    "Input data required."
             }, 400
-
-        
-        # UPDATE FIELDS
-        
 
         drive.job_title = data.get(
             "job_title",
@@ -385,9 +439,9 @@ class UpdateDriveAPI(Resource):
             drive.job_description
         )
 
-        drive.required_branch = data.get(
-            "required_branch",
-            drive.required_branch
+        drive.eligible_branch = data.get(
+            "eligible_branch",
+            drive.eligible_branch
         )
 
         drive.min_cgpa = data.get(
@@ -395,14 +449,20 @@ class UpdateDriveAPI(Resource):
             drive.min_cgpa
         )
 
-        drive.passing_year = data.get(
-            "passing_year",
-            drive.passing_year
+        drive.eligible_year = data.get(
+            "eligible_year",
+            drive.eligible_year
         )
 
-        
-        # UPDATE DEADLINE
-        
+        drive.location = data.get(
+            "location",
+            drive.location
+        )
+
+        drive.salary_package = data.get(
+            "salary_package",
+            drive.salary_package
+        )
 
         application_deadline = data.get(
             "application_deadline"
@@ -416,41 +476,34 @@ class UpdateDriveAPI(Resource):
                     datetime.strptime(
                         application_deadline,
                         "%Y-%m-%d"
-                    ).date()
+                    )
                 )
 
             except ValueError:
 
                 return {
-                    "message": "Invalid date format."
+                    "message":
+                        "Invalid date format."
                 }, 400
-
-        
-        # RESET STATUS AFTER UPDATE
-        
 
         drive.status = "pending"
 
         db.session.commit()
 
         return {
-            "message": "Placement drive updated successfully."
+            "message":
+                "Placement drive updated successfully."
         }, 200
 
 
-
-# DELETE PLACEMENT DRIVE
-
+# ======================================
+# DELETE DRIVE
+# ======================================
 
 class DeleteDriveAPI(Resource):
 
     @jwt_required()
     def delete(self, drive_id):
-
-        company_check = company_required()
-
-        if company_check:
-            return company_check
 
         company_id = int(get_jwt_identity())
 
@@ -462,7 +515,8 @@ class DeleteDriveAPI(Resource):
         if not drive:
 
             return {
-                "message": "Drive not found."
+                "message":
+                    "Drive not found."
             }, 404
 
         db.session.delete(drive)
@@ -470,23 +524,19 @@ class DeleteDriveAPI(Resource):
         db.session.commit()
 
         return {
-            "message": "Placement drive deleted successfully."
+            "message":
+                "Placement drive deleted successfully."
         }, 200
 
 
-
+# ======================================
 # VIEW APPLICANTS
-
+# ======================================
 
 class ViewApplicantsAPI(Resource):
 
     @jwt_required()
     def get(self, drive_id):
-
-        company_check = company_required()
-
-        if company_check:
-            return company_check
 
         company_id = int(get_jwt_identity())
 
@@ -498,12 +548,17 @@ class ViewApplicantsAPI(Resource):
         if not drive:
 
             return {
-                "message": "Drive not found."
+                "message":
+                    "Drive not found."
             }, 404
 
-        applications = Application.query.filter_by(
-            drive_id=drive_id
-        ).all()
+        applications = []
+
+        if drive.position_id:
+
+            applications = Application.query.filter_by(
+                job_id=drive.position_id
+            ).all()
 
         applicant_list = []
 
@@ -529,6 +584,15 @@ class ViewApplicantsAPI(Resource):
                 "cgpa":
                     application.student.cgpa,
 
+                "college":
+                    application.student.college,
+
+                "phone":
+                    application.student.phone,
+
+                "skills":
+                    application.student.skills,
+
                 "year":
                     application.student.year,
 
@@ -538,39 +602,34 @@ class ViewApplicantsAPI(Resource):
                 "status":
                     application.status,
 
-                "application_date":
-                    str(application.application_date),
+                "applied_at":
+                    str(application.applied_at),
 
                 "interview_date":
                     str(application.interview_date)
                     if application.interview_date
                     else None
-
             })
 
         return applicant_list, 200
 
 
-
+# ======================================
 # UPDATE APPLICATION STATUS
-
+# ======================================
 
 class UpdateApplicationStatusAPI(Resource):
 
     @jwt_required()
     def put(self, application_id):
 
-        company_check = company_required()
-
-        if company_check:
-            return company_check
-
         data = request.get_json()
 
         if not data:
 
             return {
-                "message": "Input data required."
+                "message":
+                    "Input data required."
             }, 400
 
         new_status = data.get("status")
@@ -581,35 +640,39 @@ class UpdateApplicationStatusAPI(Resource):
             "Shortlisted",
             "Selected",
             "Rejected"
-
         ]
 
         if new_status not in valid_status:
 
             return {
-                "message": "Invalid status."
+                "message":
+                    "Invalid status."
             }, 400
 
-        application = Application.query.get(
+        application = db.session.get(
+            Application,
             application_id
         )
 
         if not application:
 
             return {
-                "message": "Application not found."
+                "message":
+                    "Application not found."
             }, 404
-
-        
-        # SECURITY CHECK
-        
 
         company_id = int(get_jwt_identity())
 
-        if application.drive.company_id != company_id:
+        job = db.session.get(
+            JobPosition,
+            application.job_id
+        )
+
+        if not job or job.company_id != company_id:
 
             return {
-                "message": "Unauthorized access."
+                "message":
+                    "Unauthorized access."
             }, 403
 
         application.status = new_status
@@ -617,44 +680,44 @@ class UpdateApplicationStatusAPI(Resource):
         db.session.commit()
 
         return {
-            "message": "Application status updated successfully."
+            "message":
+                "Application status updated successfully."
         }, 200
 
 
-
-# SCHEDULE INTERVIEW API
-
+# ======================================
+# SCHEDULE INTERVIEW
+# ======================================
 
 class ScheduleInterviewAPI(Resource):
 
     @jwt_required()
     def put(self, application_id):
 
-        company_check = company_required()
-
-        if company_check:
-            return company_check
-
-        application = Application.query.get(
+        application = db.session.get(
+            Application,
             application_id
         )
 
         if not application:
 
             return {
-                "message": "Application not found."
+                "message":
+                    "Application not found."
             }, 404
-
-        
-        # SECURITY CHECK
-        
 
         company_id = int(get_jwt_identity())
 
-        if application.drive.company_id != company_id:
+        job = db.session.get(
+            JobPosition,
+            application.job_id
+        )
+
+        if not job or job.company_id != company_id:
 
             return {
-                "message": "Unauthorized access."
+                "message":
+                    "Unauthorized access."
             }, 403
 
         data = request.get_json()
@@ -662,7 +725,8 @@ class ScheduleInterviewAPI(Resource):
         if not data:
 
             return {
-                "message": "Input data required."
+                "message":
+                    "Input data required."
             }, 400
 
         interview_date = data.get(
@@ -672,7 +736,8 @@ class ScheduleInterviewAPI(Resource):
         if not interview_date:
 
             return {
-                "message": "Interview date required."
+                "message":
+                    "Interview date required."
             }, 400
 
         try:
@@ -687,76 +752,54 @@ class ScheduleInterviewAPI(Resource):
         except ValueError:
 
             return {
-                "message": "Invalid datetime format."
+                "message":
+                    "Invalid datetime format."
             }, 400
 
         db.session.commit()
 
         return {
-            "message": "Interview scheduled successfully."
+            "message":
+                "Interview scheduled successfully."
         }, 200
+
+
+# ======================================
+# SHORTLISTED STUDENTS API
+# ======================================
 
 class ShortlistedStudentsAPI(Resource):
 
     @jwt_required()
-
     def get(self):
 
         try:
 
-            identity = get_jwt_identity()
+            company_id = int(
+                get_jwt_identity()
+            )
 
-            company_id = identity["id"]
-
-            drive_id = request.args.get("drive_id")
-
-            status = request.args.get("status")
-
-            # ======================================
-            # BASE QUERY
-            # ======================================
+            status = request.args.get(
+                "status"
+            )
 
             query = db.session.query(
-
                 Application,
                 User,
-                Placement
-
+                JobPosition
             ).join(
-
                 User,
                 Application.student_id == User.id
-
             ).join(
-
-                Placement,
-                Application.drive_id == Placement.id
-
+                JobPosition,
+                Application.job_id == JobPosition.id
             ).filter(
-
-                Placement.company_id == company_id
-
+                JobPosition.company_id == company_id
             ).filter(
-
                 Application.status.in_(
                     ["Shortlisted", "Selected"]
                 )
-
             )
-
-            # ======================================
-            # FILTER BY DRIVE
-            # ======================================
-
-            if drive_id:
-
-                query = query.filter(
-                    Placement.id == drive_id
-                )
-
-            # ======================================
-            # FILTER BY STATUS
-            # ======================================
 
             if status:
 
@@ -768,7 +811,7 @@ class ShortlistedStudentsAPI(Resource):
 
             students = []
 
-            for application, student, drive in results:
+            for application, student, job in results:
 
                 students.append({
 
@@ -787,8 +830,17 @@ class ShortlistedStudentsAPI(Resource):
                     "cgpa":
                         student.cgpa,
 
+                    "college":
+                        student.college,
+
+                    "phone":
+                        student.phone,
+
+                    "skills":
+                        student.skills,
+
                     "year":
-                        student.passing_year,
+                        student.year,
 
                     "resume":
                         student.resume,
@@ -796,15 +848,16 @@ class ShortlistedStudentsAPI(Resource):
                     "status":
                         application.status,
 
-                    "application_date":
-                        application.applied_at,
+                    "applied_at":
+                        str(application.applied_at),
 
                     "interview_date":
-                        application.interview_date,
+                        str(application.interview_date)
+                        if application.interview_date
+                        else None,
 
                     "job_title":
-                        drive.job_title
-
+                        job.title
                 })
 
             return students, 200

@@ -56,7 +56,10 @@
               <th>ID</th>
               <th>Student</th>
               <th>Email</th>
+              <th>Phone</th>
+              <th>College</th>
               <th>Branch</th>
+              <th>Skills</th>
               <th>CGPA</th>
               <th>Year</th>
               <th>Status</th>
@@ -99,7 +102,13 @@
 
               <td>{{ student.email }}</td>
 
+              <td>{{ student.phone || 'N/A' }}</td>
+
+              <td>{{ student.college || 'N/A' }}</td>
+
               <td>{{ student.branch }}</td>
+
+              <td>{{ student.skills || 'N/A' }}</td>
 
               <td>{{ student.cgpa }}</td>
 
@@ -109,10 +118,17 @@
               <td>
 
                 <span
-                  class="status-badge"
-                  :class="student.status?.toLowerCase()"
+                  v-if="student.active"
+                  class="status-badge active"
                 >
-                  {{ student.status }}
+                  Active
+                </span>
+
+                <span
+                  v-else
+                  class="status-badge blocked"
+                >
+                  Blocked
                 </span>
 
               </td>
@@ -148,11 +164,19 @@
                   </button>
 
                   <button
+                    v-if="student.active"
                     class="block-btn"
                     @click="blockStudent(student.id)"
                   >
                     Block
                   </button>
+
+                  <span
+                    v-else
+                    class="blocked-text"
+                  >
+                    Student Blocked
+                  </span>
 
                   <button
                     class="delete-btn"
@@ -209,8 +233,23 @@
           <div class="details-grid">
 
             <div class="detail-card">
+              <h6>Phone</h6>
+              <p>{{ selectedStudent.phone || 'N/A' }}</p>
+            </div>
+
+            <div class="detail-card">
+              <h6>College</h6>
+              <p>{{ selectedStudent.college || 'N/A' }}</p>
+            </div>
+
+            <div class="detail-card">
               <h6>Branch</h6>
               <p>{{ selectedStudent.branch }}</p>
+            </div>
+
+            <div class="detail-card">
+              <h6>Skills</h6>
+              <p>{{ selectedStudent.skills || 'N/A' }}</p>
             </div>
 
             <div class="detail-card">
@@ -225,7 +264,28 @@
 
             <div class="detail-card">
               <h6>Status</h6>
-              <p>{{ selectedStudent.status }}</p>
+              <p>
+                {{ selectedStudent.active ? 'Active' : 'Blocked' }}
+              </p>
+            </div>
+
+            <div class="detail-card">
+              <h6>Resume</h6>
+
+              <p v-if="selectedStudent.resume">
+                <a
+                  :href="selectedStudent.resume"
+                  target="_blank"
+                  class="resume-link"
+                >
+                  Open Resume
+                </a>
+              </p>
+
+              <p v-else>
+                No Resume
+              </p>
+
             </div>
 
           </div>
@@ -297,6 +357,18 @@ const filteredStudents = computed(() => {
         .includes(search.value.toLowerCase()) ||
 
       student.branch
+        ?.toLowerCase()
+        .includes(search.value.toLowerCase()) ||
+
+      student.college
+        ?.toLowerCase()
+        .includes(search.value.toLowerCase()) ||
+
+      student.skills
+        ?.toLowerCase()
+        .includes(search.value.toLowerCase()) ||
+
+      student.phone
         ?.toLowerCase()
         .includes(search.value.toLowerCase())
     )
@@ -433,6 +505,7 @@ const deleteStudent = async (studentId) => {
 
 .student-table {
   margin-bottom: 0;
+  min-width: 1400px;
 }
 
 .student-table thead {
@@ -692,7 +765,7 @@ const deleteStudent = async (studentId) => {
 @media (max-width: 992px) {
 
   .student-table {
-    min-width: 1100px;
+    min-width: 1400px;
   }
 }
 
@@ -714,5 +787,11 @@ const deleteStudent = async (studentId) => {
   .student-modal {
     margin: 15px;
   }
+}
+
+.blocked-text {
+  color: #dc2626;
+  font-weight: 700;
+  font-size: 14px;
 }
 </style>

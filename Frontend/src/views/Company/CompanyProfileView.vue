@@ -1,318 +1,295 @@
 <template>
   <div class="company-profile-page">
 
-    <div class="container py-5">
+    <!-- Header -->
+    <div class="page-header">
 
-      <!-- PAGE HEADER -->
+      <div>
 
-      <div class="page-header mb-4">
+        <h2>Company Profile</h2>
 
-        <div>
-
-          <h2>
-            Company Profile
-          </h2>
-
-          <p>
-            View your company information and approval status.
-          </p>
-
-        </div>
-
-        <router-link
-          to="/company/dashboard"
-          class="btn btn-outline-primary"
-        >
-
-          <i class="bi bi-arrow-left me-2"></i>
-
-          Back Dashboard
-
-        </router-link>
-
-      </div>
-
-      <!-- ALERT -->
-
-      <div
-        v-if="message"
-        class="alert"
-        :class="success ? 'alert-success' : 'alert-danger'"
-      >
-        {{ message }}
-      </div>
-
-      <!-- LOADING -->
-
-      <div
-        v-if="loading"
-        class="loading-section"
-      >
-
-        <div class="spinner-border text-primary"></div>
-
-        <p class="mt-3">
-          Loading company profile...
+        <p>
+          Manage your company information and profile details
         </p>
 
       </div>
 
-      <!-- PROFILE -->
-
-      <div
-        v-else
-        class="row g-4"
+      <button
+        class="edit-btn"
+        @click="enableEdit"
+        v-if="!editMode"
       >
+        Edit Profile
+      </button>
 
-        <!-- LEFT -->
+    </div>
 
-        <div class="col-lg-4">
+    <!-- Loading -->
+    <div
+      v-if="loading"
+      class="loading-box"
+    >
+      Loading profile...
+    </div>
 
-          <div class="profile-card">
+    <!-- Profile -->
+    <div
+      v-else
+      class="profile-wrapper"
+    >
 
-            <div class="company-avatar">
+      <!-- Left -->
+      <div class="profile-sidebar">
 
-              {{ company.name?.charAt(0) }}
+        <div class="profile-card">
 
-            </div>
+          <div class="company-avatar">
 
-            <h3>
-              {{ company.name }}
-            </h3>
-
-            <p>
-              {{ company.email }}
-            </p>
-
-            <span
-              class="status-badge"
-              :class="company.approved ? 'approved' : 'pending'"
-            >
-
-              {{ company.approved
-                ? "Approved Company"
-                : "Pending Approval"
-              }}
-
-            </span>
-
-            <div
-              class="active-status"
-              :class="company.active ? 'active' : 'inactive'"
-            >
-
-              <i
-                class="bi"
-                :class="company.active
-                  ? 'bi-check-circle-fill'
-                  : 'bi-x-circle-fill'
-                "
-              ></i>
-
-              {{ company.active
-                ? "Account Active"
-                : "Account Deactivated"
-              }}
-
-            </div>
+            {{
+              profile.company_name
+                ?.charAt(0)
+                ?.toUpperCase()
+            }}
 
           </div>
+
+          <h3>
+            {{ profile.company_name }}
+          </h3>
+
+          <p>
+            {{ profile.industry }}
+          </p>
+
+          <span
+            class="status-badge"
+            :class="profile.approved
+              ? 'approved'
+              : 'pending'"
+          >
+
+            {{
+              profile.approved
+                ? "Approved"
+                : "Pending Approval"
+            }}
+
+          </span>
 
         </div>
 
-        <!-- RIGHT -->
+      </div>
 
-        <div class="col-lg-8">
+      <!-- Right -->
+      <div class="profile-content">
 
-          <div class="details-card">
+        <div class="profile-card">
 
-            <div class="card-header-custom">
+          <div class="card-header">
 
-              <h4>
-                Company Information
-              </h4>
-
-            </div>
-
-            <div class="details-grid">
-
-              <!-- COMPANY NAME -->
-
-              <div class="detail-item">
-
-                <span class="label">
-                  Company Name
-                </span>
-
-                <span class="value">
-                  {{ company.name }}
-                </span>
-
-              </div>
-
-              <!-- EMAIL -->
-
-              <div class="detail-item">
-
-                <span class="label">
-                  Official Email
-                </span>
-
-                <span class="value">
-                  {{ company.email }}
-                </span>
-
-              </div>
-
-              <!-- HR CONTACT -->
-
-              <div class="detail-item">
-
-                <span class="label">
-                  HR Contact
-                </span>
-
-                <span class="value">
-                  {{ company.hr_contact || "Not Available" }}
-                </span>
-
-              </div>
-
-              <!-- WEBSITE -->
-
-              <div class="detail-item">
-
-                <span class="label">
-                  Company Website
-                </span>
-
-                <a
-                  v-if="company.website"
-                  :href="company.website"
-                  target="_blank"
-                  class="website-link"
-                >
-                  {{ company.website }}
-                </a>
-
-                <span
-                  v-else
-                  class="value"
-                >
-                  Not Available
-                </span>
-
-              </div>
-
-              <!-- TOTAL DRIVES -->
-
-              <div class="detail-item">
-
-                <span class="label">
-                  Total Drives
-                </span>
-
-                <span class="value">
-                  {{ stats.total_drives }}
-                </span>
-
-              </div>
-
-              <!-- APPROVED DRIVES -->
-
-              <div class="detail-item">
-
-                <span class="label">
-                  Approved Drives
-                </span>
-
-                <span class="value">
-                  {{ stats.approved_drives }}
-                </span>
-
-              </div>
-
-              <!-- PENDING DRIVES -->
-
-              <div class="detail-item">
-
-                <span class="label">
-                  Pending Drives
-                </span>
-
-                <span class="value">
-                  {{ stats.pending_drives }}
-                </span>
-
-              </div>
-
-              <!-- TOTAL APPLICATIONS -->
-
-              <div class="detail-item">
-
-                <span class="label">
-                  Total Applications
-                </span>
-
-                <span class="value">
-                  {{ stats.total_applications }}
-                </span>
-
-              </div>
-
-            </div>
+            <h3>
+              Company Information
+            </h3>
 
           </div>
 
-          <!-- INFO SECTION -->
+          <form @submit.prevent="updateProfile">
 
-          <div class="info-card mt-4">
+            <div class="form-grid">
 
-            <h5>
-              Placement Guidelines
-            </h5>
+              <!-- Company Name -->
+              <div class="form-group">
 
-            <div class="guideline-list">
+                <label>
+                  Company Name
+                </label>
 
-              <div class="guideline-item">
-
-                <i class="bi bi-check-circle-fill"></i>
-
-                <span>
-                  Placement drives require admin approval before publishing.
-                </span>
-
-              </div>
-
-              <div class="guideline-item">
-
-                <i class="bi bi-check-circle-fill"></i>
-
-                <span>
-                  Keep job descriptions and eligibility criteria accurate.
-                </span>
+                <input
+                  type="text"
+                  v-model="form.company_name"
+                  :disabled="!editMode"
+                />
 
               </div>
 
-              <div class="guideline-item">
+              <!-- Industry -->
+              <div class="form-group">
 
-                <i class="bi bi-check-circle-fill"></i>
+                <label>
+                  Industry
+                </label>
 
-                <span>
-                  Update student application status regularly.
-                </span>
+                <input
+                  type="text"
+                  v-model="form.industry"
+                  :disabled="!editMode"
+                />
+
+              </div>
+
+              <!-- Email -->
+              <div class="form-group">
+
+                <label>
+                  Email
+                </label>
+
+                <input
+                  type="email"
+                  v-model="form.email"
+                  disabled
+                />
 
               </div>
 
-              <div class="guideline-item">
+              <!-- HR Contact -->
+              <div class="form-group">
 
-                <i class="bi bi-check-circle-fill"></i>
+                <label>
+                  HR Contact
+                </label>
 
-                <span>
-                  Schedule interviews only after shortlisting candidates.
-                </span>
+                <input
+                  type="text"
+                  v-model="form.hr_contact"
+                  :disabled="!editMode"
+                />
 
               </div>
+
+              <!-- Website -->
+              <div class="form-group">
+
+                <label>
+                  Website
+                </label>
+
+                <input
+                  type="url"
+                  v-model="form.website"
+                  :disabled="!editMode"
+                />
+
+              </div>
+
+              <!-- Location -->
+              <div class="form-group">
+
+                <label>
+                  Location
+                </label>
+
+                <input
+                  type="text"
+                  v-model="form.location"
+                  :disabled="!editMode"
+                />
+
+              </div>
+
+            </div>
+
+            <!-- Description -->
+            <div class="form-group">
+
+              <label>
+                Company Description
+              </label>
+
+              <textarea
+                rows="6"
+                v-model="form.company_description"
+                :disabled="!editMode"
+              ></textarea>
+
+            </div>
+
+            <!-- Buttons -->
+            <div
+              v-if="editMode"
+              class="button-group"
+            >
+
+              <button
+                type="submit"
+                class="save-btn"
+                :disabled="updating"
+              >
+
+                <span v-if="updating">
+                  Saving...
+                </span>
+
+                <span v-else>
+                  Save Changes
+                </span>
+
+              </button>
+
+              <button
+                type="button"
+                class="cancel-btn"
+                @click="cancelEdit"
+              >
+                Cancel
+              </button>
+
+            </div>
+
+          </form>
+
+        </div>
+
+        <!-- Account Info -->
+        <div class="profile-card">
+
+          <div class="card-header">
+
+            <h3>
+              Account Information
+            </h3>
+
+          </div>
+
+          <div class="account-grid">
+
+            <div class="account-item">
+
+              <label>
+                Account Status
+              </label>
+
+              <span>
+                {{
+                  profile.active
+                    ? "Active"
+                    : "Deactivated"
+                }}
+              </span>
+
+            </div>
+
+            <div class="account-item">
+
+              <label>
+                Role
+              </label>
+
+              <span>
+                {{ profile.role }}
+              </span>
+
+            </div>
+
+            <div class="account-item">
+
+              <label>
+                Company ID
+              </label>
+
+              <span>
+                #{{ profile.id }}
+              </span>
 
             </div>
 
@@ -328,7 +305,7 @@
 </template>
 
 <script>
-import axios from "axios"
+import axios from "axios";
 
 export default {
 
@@ -338,71 +315,202 @@ export default {
 
     return {
 
-      loading: false,
+      loading: true,
 
-      success: false,
+      updating: false,
 
-      message: "",
+      editMode: false,
 
-      company: {},
+      profile: {},
 
-      stats: {}
+      form: {
 
-    }
+        company_name: "",
+        industry: "",
+        email: "",
+        hr_contact: "",
+        website: "",
+        location: "",
+        company_description: ""
+
+      }
+
+    };
 
   },
 
   mounted() {
 
-    this.fetchProfile()
+    this.fetchProfile();
 
   },
 
   methods: {
 
+    getHeaders() {
+
+      return {
+
+        headers: {
+
+          Authorization:
+            `Bearer ${localStorage.getItem("token")}`
+
+        }
+
+      };
+
+    },
+
     async fetchProfile() {
 
       try {
-
-        this.loading = true
-
-        const token = localStorage.getItem("token")
 
         const response = await axios.get(
 
           "http://127.0.0.1:5000/api/company/dashboard",
 
-          {
+          this.getHeaders()
 
-            headers: {
+        );
 
-              Authorization: `Bearer ${token}`
+        this.profile =
+          response.data.company;
 
-            }
+        this.form = {
 
-          }
+          company_name:
+            this.profile.company_name,
 
-        )
+          industry:
+            this.profile.industry,
 
-        this.company = response.data.company
+          email:
+            this.profile.email,
 
-        this.stats = response.data.stats
+          hr_contact:
+            this.profile.hr_contact,
+
+          website:
+            this.profile.website,
+
+          location:
+            this.profile.location,
+
+          company_description:
+            this.profile.company_description
+
+        };
 
       }
 
       catch (error) {
 
-        this.success = false
+        console.error(error);
 
-        this.message =
+        alert(
+
           error.response?.data?.message ||
-          "Failed to load company profile."
+
+          "Failed to load profile."
+
+        );
 
       }
 
       finally {
 
-        this.loading = false
+        this.loading = false;
+
+      }
+
+    },
+
+    enableEdit() {
+
+      this.editMode = true;
+
+    },
+
+    cancelEdit() {
+
+      this.editMode = false;
+
+      this.form = {
+
+        company_name:
+          this.profile.company_name,
+
+        industry:
+          this.profile.industry,
+
+        email:
+          this.profile.email,
+
+        hr_contact:
+          this.profile.hr_contact,
+
+        website:
+          this.profile.website,
+
+        location:
+          this.profile.location,
+
+        company_description:
+          this.profile.company_description
+
+      };
+
+    },
+
+    async updateProfile() {
+
+      try {
+
+        this.updating = true;
+
+        /*
+          Replace endpoint
+          with your update API
+        */
+
+        await axios.put(
+
+          "http://127.0.0.1:5000/api/profile",
+
+          this.form,
+
+          this.getHeaders()
+
+        );
+
+        alert(
+          "Profile updated successfully."
+        );
+
+        this.editMode = false;
+
+        this.fetchProfile();
+
+      }
+
+      catch (error) {
+
+        console.error(error);
+
+        alert(
+
+          error.response?.data?.message ||
+
+          "Failed to update profile."
+
+        );
+
+      }
+
+      finally {
+
+        this.updating = false;
 
       }
 
@@ -410,18 +518,23 @@ export default {
 
   }
 
-}
+};
 </script>
 
 <style scoped>
 
-/* =========================
-   PAGE
-========================= */
-
 .company-profile-page {
+
   min-height: 100vh;
-  background: #f5f7fb;
+  padding: 30px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #fff5f8,
+      #f5f3ff
+    );
+
 }
 
 /* =========================
@@ -429,237 +542,435 @@ export default {
 ========================= */
 
 .page-header {
+
   display: flex;
   justify-content: space-between;
   align-items: center;
+
   gap: 20px;
   flex-wrap: wrap;
+
+  margin-bottom: 30px;
+
 }
 
 .page-header h2 {
-  font-size: 2.3rem;
-  font-weight: 700;
-  color: #0f172a;
+
+  margin: 0;
+
+  font-size: 34px;
+  color: #312e81;
+
 }
 
 .page-header p {
-  color: #64748b;
-  margin-top: 10px;
-}
 
-/* =========================
-   PROFILE CARD
-========================= */
-
-.profile-card {
-  background: white;
-  border-radius: 24px;
-  padding: 35px 25px;
-  text-align: center;
-  box-shadow:
-    0 8px 24px rgba(0,0,0,0.05);
-  height: 100%;
-}
-
-.company-avatar {
-  width: 110px;
-  height: 110px;
-  border-radius: 50%;
-  background: linear-gradient(
-    135deg,
-    #2563eb,
-    #1d4ed8
-  );
-  color: white;
-  font-size: 2.8rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: auto;
-  margin-bottom: 25px;
-}
-
-.profile-card h3 {
-  font-weight: 700;
-  color: #0f172a;
-}
-
-.profile-card p {
-  color: #64748b;
   margin-top: 8px;
-  word-break: break-word;
-}
-
-/* =========================
-   STATUS
-========================= */
-
-.status-badge {
-  display: inline-block;
-  margin-top: 20px;
-  padding: 10px 18px;
-  border-radius: 50px;
-  font-size: 0.9rem;
-  font-weight: 600;
-}
-
-.approved {
-  background: #dcfce7;
-  color: #15803d;
-}
-
-.pending {
-  background: #fef3c7;
-  color: #b45309;
-}
-
-.active-status {
-  margin-top: 18px;
-  font-weight: 600;
-}
-
-.active {
-  color: #15803d;
-}
-
-.inactive {
-  color: #b91c1c;
-}
-
-/* =========================
-   DETAILS CARD
-========================= */
-
-.details-card,
-.info-card {
-  background: white;
-  border-radius: 24px;
-  padding: 35px;
-  box-shadow:
-    0 8px 24px rgba(0,0,0,0.05);
-}
-
-.card-header-custom {
-  margin-bottom: 30px;
-}
-
-.card-header-custom h4 {
-  font-weight: 700;
-  color: #0f172a;
-}
-
-/* =========================
-   GRID
-========================= */
-
-.details-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-}
-
-.detail-item {
-  background: #f8fafc;
-  border-radius: 16px;
-  padding: 18px;
-}
-
-.label {
-  display: block;
   color: #64748b;
-  font-size: 0.82rem;
-  margin-bottom: 10px;
+
 }
 
-.value {
-  font-weight: 600;
-  color: #0f172a;
-  word-break: break-word;
-}
+.edit-btn {
 
-.website-link {
-  color: #2563eb;
-  font-weight: 600;
-  text-decoration: none;
-  word-break: break-word;
-}
+  border: none;
 
-.website-link:hover {
-  text-decoration: underline;
-}
+  background:
+    linear-gradient(
+      135deg,
+      #7c3aed,
+      #dc2626
+    );
 
-/* =========================
-   GUIDELINES
-========================= */
+  color: white;
 
-.info-card h5 {
+  padding: 14px 22px;
+
+  border-radius: 14px;
+
   font-weight: 700;
-  margin-bottom: 25px;
-  color: #0f172a;
+
+  cursor: pointer;
+
+  transition: 0.3s;
+
 }
 
-.guideline-list {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
+.edit-btn:hover {
 
-.guideline-item {
-  display: flex;
-  gap: 14px;
-  align-items: flex-start;
-}
+  transform: translateY(-2px);
 
-.guideline-item i {
-  color: #10b981;
-  margin-top: 2px;
-}
-
-.guideline-item span {
-  color: #475569;
-  line-height: 1.7;
 }
 
 /* =========================
    LOADING
 ========================= */
 
-.loading-section {
+.loading-box {
+
+  background: white;
+
+  padding: 50px;
+
+  border-radius: 24px;
+
   text-align: center;
-  padding: 80px 20px;
+  font-weight: 700;
+
 }
 
 /* =========================
-   ALERT
+   LAYOUT
 ========================= */
 
-.alert {
+.profile-wrapper {
+
+  display: grid;
+
+  grid-template-columns:
+    320px 1fr;
+
+  gap: 24px;
+
+}
+
+.profile-card {
+
+  background: white;
+
+  border-radius: 26px;
+
+  padding: 28px;
+
+  box-shadow:
+    0 15px 40px rgba(0,0,0,0.05);
+
+}
+
+/* =========================
+   SIDEBAR
+========================= */
+
+.profile-sidebar {
+
+  position: sticky;
+  top: 20px;
+
+  height: fit-content;
+
+}
+
+.company-avatar {
+
+  width: 110px;
+  height: 110px;
+
+  margin: auto;
+
+  border-radius: 50%;
+
+  background:
+    linear-gradient(
+      135deg,
+      #7c3aed,
+      #dc2626
+    );
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 42px;
+  font-weight: bold;
+
+  color: white;
+
+  margin-bottom: 24px;
+
+}
+
+.profile-sidebar h3 {
+
+  text-align: center;
+
+  margin-bottom: 8px;
+
+  color: #1e1b4b;
+
+}
+
+.profile-sidebar p {
+
+  text-align: center;
+
+  color: #64748b;
+
+  margin-bottom: 20px;
+
+}
+
+.status-badge {
+
+  display: block;
+
+  width: fit-content;
+
+  margin: auto;
+
+  padding: 8px 16px;
+
+  border-radius: 50px;
+
+  font-size: 13px;
+  font-weight: 700;
+
+}
+
+.status-badge.approved {
+
+  background: #dcfce7;
+  color: #16a34a;
+
+}
+
+.status-badge.pending {
+
+  background: #fef3c7;
+  color: #d97706;
+
+}
+
+/* =========================
+   CONTENT
+========================= */
+
+.card-header {
+
+  margin-bottom: 24px;
+
+}
+
+.card-header h3 {
+
+  margin: 0;
+  color: #1e1b4b;
+
+}
+
+.form-grid {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(auto-fit, minmax(240px, 1fr));
+
+  gap: 20px;
+
+}
+
+.form-group {
+
+  margin-bottom: 22px;
+
+}
+
+.form-group label {
+
+  display: block;
+
+  margin-bottom: 10px;
+
+  font-weight: 700;
+
+  color: #334155;
+
+}
+
+.form-group input,
+.form-group textarea {
+
+  width: 100%;
+
+  padding: 14px 16px;
+
   border-radius: 14px;
-  padding: 15px 18px;
+
+  border: 1px solid #dbeafe;
+
+  outline: none;
+
+  background: #fafafa;
+
+  transition: 0.3s;
+
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+
+  border-color: #7c3aed;
+
+  box-shadow:
+    0 0 0 4px rgba(124,58,237,0.08);
+
+  background: white;
+
+}
+
+.form-group input:disabled,
+.form-group textarea:disabled {
+
+  background: #f8fafc;
+  cursor: not-allowed;
+
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+.button-group {
+
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+
+  margin-top: 10px;
+
+}
+
+.save-btn,
+.cancel-btn {
+
+  border: none;
+
+  padding: 14px 22px;
+
+  border-radius: 14px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+}
+
+.save-btn {
+
+  background:
+    linear-gradient(
+      135deg,
+      #7c3aed,
+      #dc2626
+    );
+
+  color: white;
+
+}
+
+.cancel-btn {
+
+  background: #f1f5f9;
+  color: #334155;
+
+}
+
+/* =========================
+   ACCOUNT
+========================= */
+
+.account-grid {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(auto-fit, minmax(200px, 1fr));
+
+  gap: 20px;
+
+}
+
+.account-item {
+
+  background: #fafafa;
+
+  border-radius: 18px;
+
+  padding: 20px;
+
+}
+
+.account-item label {
+
+  display: block;
+
+  font-size: 13px;
+
+  color: #64748b;
+
+  margin-bottom: 10px;
+
+}
+
+.account-item span {
+
+  font-size: 18px;
+  font-weight: 700;
+
+  color: #1e293b;
+
 }
 
 /* =========================
    RESPONSIVE
 ========================= */
 
-@media (max-width: 991px) {
+@media (max-width: 992px) {
 
-  .details-grid {
+  .profile-wrapper {
+
     grid-template-columns: 1fr;
+
+  }
+
+  .profile-sidebar {
+
+    position: relative;
+
   }
 
 }
 
 @media (max-width: 768px) {
 
-  .page-header h2 {
-    font-size: 1.9rem;
+  .company-profile-page {
+
+    padding: 18px;
+
   }
 
-  .details-card,
-  .info-card {
-    padding: 25px;
+  .page-header {
+
+    flex-direction: column;
+    align-items: flex-start;
+
+  }
+
+  .page-header h2 {
+
+    font-size: 28px;
+
+  }
+
+  .button-group {
+
+    flex-direction: column;
+
+  }
+
+  .save-btn,
+  .cancel-btn {
+
+    width: 100%;
+
   }
 
 }

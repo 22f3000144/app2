@@ -1,6 +1,5 @@
-
 <template>
-  
+
   <div class="register-container">
 
     <div class="register-card">
@@ -15,21 +14,24 @@
 
       <form @submit.prevent="registerCompany">
 
-        <!-- Company HR Name -->
+        <!-- Company Name -->
         <div class="form-group">
-          <label>HR Name</label>
+
+          <label>Company Name</label>
 
           <input
             type="text"
             v-model="form.name"
             class="form-control"
-            placeholder="Enter HR Name"
+            placeholder="Enter Company Name"
             required
           />
+
         </div>
 
         <!-- Email -->
         <div class="form-group">
+
           <label>Email</label>
 
           <input
@@ -39,10 +41,12 @@
             placeholder="Enter Company Email"
             required
           />
+
         </div>
 
         <!-- Password -->
         <div class="form-group">
+
           <label>Password</label>
 
           <input
@@ -52,35 +56,26 @@
             placeholder="Enter Password"
             required
           />
-        </div>
 
-        <!-- Company Name -->
-        <div class="form-group">
-          <label>Company Name</label>
-
-          <input
-            type="text"
-            v-model="form.company_name"
-            class="form-control"
-            placeholder="Enter Company Name"
-            required
-          />
         </div>
 
         <!-- Website -->
         <div class="form-group">
+
           <label>Website</label>
 
           <input
-            type="text"
+            type="url"
             v-model="form.website"
             class="form-control"
             placeholder="Enter Company Website"
           />
+
         </div>
 
         <!-- HR Contact -->
         <div class="form-group">
+
           <label>HR Contact</label>
 
           <input
@@ -88,7 +83,9 @@
             v-model="form.hr_contact"
             class="form-control"
             placeholder="Enter HR Contact Number"
+            required
           />
+
         </div>
 
         <!-- Submit -->
@@ -110,14 +107,12 @@
       </p>
 
     </div>
-      <!-- Register Links -->
-      <!-- Register Links -->
 
   </div>
+
 </template>
 
 <script>
-import HelloWorld from "@/components/HelloWorld.vue";
 import axios from "axios";
 
 export default {
@@ -133,9 +128,9 @@ export default {
         name: "",
         email: "",
         password: "",
+
         role: "company",
 
-        company_name: "",
         website: "",
         hr_contact: ""
 
@@ -165,9 +160,9 @@ export default {
           name: "",
           email: "",
           password: "",
+
           role: "company",
 
-          company_name: "",
           website: "",
           hr_contact: ""
 
@@ -225,32 +220,6 @@ export default {
 
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
-.register-links {
-
-  margin-top: 25px;
-
-  display: flex;
-
-  justify-content: space-between;
-
-  gap: 10px;
-}
-
-.register-links a {
-
-  text-decoration: none;
-
-  color: #8e1fe9;
-
-  font-weight: 600;
-
-  font-size: 14px;
-}
-
-.register-links a:hover {
-
-  text-decoration: underline;
-}
 
 .title {
 
@@ -303,6 +272,8 @@ label {
   font-size: 15px;
 
   transition: 0.3s;
+
+  box-sizing: border-box;
 }
 
 .form-control:focus {

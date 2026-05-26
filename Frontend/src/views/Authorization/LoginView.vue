@@ -159,9 +159,13 @@
             Don't have an account?
           </p>
 
-          <RouterLink to="/register">
-            Register Here
-          </RouterLink>
+          <RouterLink to="/company-register">
+            Register 
+          </RouterLink>Here As Company
+          <br>
+          <RouterLink to="/student-register"> 
+            Register
+          </RouterLink>Here As Student
 
         </div>
 
